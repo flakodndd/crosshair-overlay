@@ -1,0 +1,56 @@
+{
+  "appId": "com.crosshair.overlay",
+  "productName": "Crosshair Overlay",
+  "directories": {
+    "output": "release",
+    "buildResources": "assets"
+  },
+  "files": [
+    "dist/**/*",
+    "node_modules/**/*",
+    "package.json"
+  ],
+  "publish": [
+    {
+      "provider": "github",
+      "owner": "flakodndd",
+      "repo": "crosshair-overlay"
+    }
+  ],
+  "win": {
+    "target": [
+      {
+        "target": "nsis",
+        "arch": ["x64"]
+      }
+    ],
+    "icon": "assets/icon.ico",
+    "artifactName": "CrosshairOverlay-${version}-Setup.${ext}"
+  },
+  "nsis": {
+    "oneClick": false,
+    "perMachine": false,
+    "allowToChangeInstallationDirectory": true,
+    "allowElevation": true,
+    "createDesktopShortcut": true,
+    "createStartMenuShortcut": true,
+    "shortcutName": "Crosshair Overlay",
+    "installerIcon": "assets/icon.ico",
+    "uninstallerIcon": "assets/icon.ico",
+    "installerHeaderIcon": "assets/icon.ico",
+    "deleteAppDataOnUninstall": false,
+    "runAfterFinish": true,
+    "unicode": true,
+    "warningsAsErrors": false
+  },
+  "mac": {
+    "target": "dmg",
+    "icon": "assets/icon.icns",
+    "category": "public.app-category.games"
+  },
+  "linux": {
+    "target": "AppImage",
+    "icon": "assets/icon.png",
+    "category": "Game"
+  }
+}
