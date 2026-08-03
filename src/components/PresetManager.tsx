@@ -206,7 +206,7 @@ export function PresetManager() {
   };
 
   return (
-    <div className="flex h-full bg-[#0a0a12] text-white">
+    <div className="flex h-full text-white">
       <input
         ref={fileInputRef}
         type="file"
@@ -216,7 +216,7 @@ export function PresetManager() {
       />
 
       {/* Folder sidebar */}
-      <div className="w-56 flex-shrink-0 border-r border-white/5 flex flex-col bg-[#0e0e1a]">
+      <div className="w-56 flex-shrink-0 border-r border-white/5 flex flex-col">
         <div className="p-3 border-b border-white/5">
           <h2 className="text-xs font-semibold uppercase tracking-wider text-white/40 mb-2">Folders</h2>
           <button
@@ -312,7 +312,7 @@ export function PresetManager() {
       {/* Main content */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Header */}
-        <div className="flex items-center gap-3 px-4 py-3 border-b border-white/5 bg-[#0e0e1a]/50">
+        <div className="flex items-center gap-3 px-4 py-3 border-b border-white/5">
           <h1 className="text-lg font-semibold text-white/90">Presets</h1>
 
           <div className="flex-1" />
@@ -427,7 +427,7 @@ export function PresetManager() {
                             ? 'border-accent-500 ring-2 ring-accent-500/30 shadow-lg shadow-accent-500/10'
                             : isSelected
                               ? 'border-accent-500/40 bg-accent-500/5'
-                              : 'border-white/5 hover:border-white/10 bg-[#12121f]'
+                              : 'border-white/5 hover:border-white/10'
                           }
                           ${dragOverIndex === index ? 'border-t-2 border-t-accent-500' : ''}
                         `}
@@ -457,7 +457,7 @@ export function PresetManager() {
                         </div>
 
                         {/* Preview */}
-                        <div className="relative h-28 flex items-center justify-center bg-[#0a0a14]">
+                        <div className="relative h-28 flex items-center justify-center">
                           <CrosshairRenderer config={preset.crosshair} size={56} />
 
                           {/* Favorite star */}
@@ -675,7 +675,7 @@ export function PresetManager() {
                       </div>
 
                       {/* Preview */}
-                      <div className="w-10 h-10 flex-shrink-0 flex items-center justify-center bg-[#0a0a14] rounded-lg border border-white/5">
+                      <div className="w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-lg border border-white/5">
                         <CrosshairRenderer config={preset.crosshair} size={28} />
                       </div>
 

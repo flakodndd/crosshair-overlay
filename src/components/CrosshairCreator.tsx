@@ -291,7 +291,7 @@ export function CrosshairCreator() {
   const previewSize = useMemo(() => Math.min(320, 200 * zoom), [zoom]);
 
   return (
-    <div className="flex h-full bg-[#0f0f1a]">
+    <div className="flex h-full">
       {/* LEFT SIDE - Preview */}
       <div className="flex-1 flex flex-col border-r border-white/5">
         {/* Preview Header */}
@@ -386,7 +386,7 @@ export function CrosshairCreator() {
       </div>
 
       {/* RIGHT SIDE - Editor Panel */}
-      <div className="w-[380px] flex flex-col bg-[#12121f] overflow-hidden">
+      <div className="w-[380px] flex flex-col overflow-hidden">
         {/* Editor Header */}
         <div className="px-4 py-3 border-b border-white/5">
           <div className="flex items-center gap-2">

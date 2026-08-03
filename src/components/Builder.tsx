@@ -253,7 +253,7 @@ export function Builder() {
   }, [drawColor, setEditingCrosshair, addCustomCrosshair]);
 
   return (
-    <div className="flex h-full bg-[#0f0f1a]">
+    <div className="flex h-full">
       <input
         ref={fileInputRef}
         type="file"
@@ -310,7 +310,7 @@ export function Builder() {
       </div>
 
       {/* Tools panel */}
-      <div className="w-64 border-l border-white/5 bg-[#12121f] p-4 flex flex-col gap-4 overflow-y-auto">
+      <div className="w-64 border-l border-white/5 p-4 flex flex-col gap-4 overflow-y-auto">
         <div>
           <h3 className="text-xs font-semibold uppercase tracking-wider text-white/40 mb-3">Tools</h3>
           <div className="grid grid-cols-2 gap-2">
