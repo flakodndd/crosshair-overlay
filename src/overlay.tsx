@@ -41,11 +41,12 @@ function StaticCrosshair({ config }: { config: CrosshairConfig }) {
     );
   }
 
-  const hLength = config.horizontalWidth ?? config.width ?? 6;
-  const hThickness = config.horizontalHeight ?? config.thickness ?? 2;
-  const vLength = config.verticalHeight ?? config.height ?? 6;
-  const vThickness = config.verticalWidth ?? config.thickness ?? 2;
-  const effectiveGap = config.gap ?? 4;
+  const scale = config.size ?? 1;
+  const hLength = (config.horizontalWidth ?? config.width ?? 6) * scale;
+  const hThickness = (config.horizontalHeight ?? config.thickness ?? 2) * scale;
+  const vLength = (config.verticalHeight ?? config.height ?? 6) * scale;
+  const vThickness = (config.verticalWidth ?? config.thickness ?? 2) * scale;
+  const effectiveGap = (config.gap ?? 4) * scale;
   const cx = half;
   const cy = half;
 
@@ -119,10 +120,10 @@ function StaticCrosshair({ config }: { config: CrosshairConfig }) {
       <g filter={filterAttr} transform={`translate(${offsetX}, ${offsetY}) rotate(${rotation} ${cx} ${cy})`}>
         {config.outline && (
           <>
-            <line x1={cx - hLength - effectiveGap} y1={cy} x2={cx - effectiveGap} y2={cy} stroke="#000000" strokeWidth={hThickness + (config.outlineThickness || 2)} strokeOpacity={opacity} strokeLinecap={lineCap} />
-            <line x1={cx + effectiveGap} y1={cy} x2={cx + hLength + effectiveGap} y2={cy} stroke="#000000" strokeWidth={hThickness + (config.outlineThickness || 2)} strokeOpacity={opacity} strokeLinecap={lineCap} />
-            <line x1={cx} y1={cy - vLength - effectiveGap} x2={cx} y2={cy - effectiveGap} stroke="#000000" strokeWidth={vThickness + (config.outlineThickness || 2)} strokeOpacity={opacity} strokeLinecap={lineCap} />
-            <line x1={cx} y1={cy + effectiveGap} x2={cx} y2={cy + vLength + effectiveGap} stroke="#000000" strokeWidth={vThickness + (config.outlineThickness || 2)} strokeOpacity={opacity} strokeLinecap={lineCap} />
+            <line x1={cx - hLength - effectiveGap} y1={cy} x2={cx - effectiveGap} y2={cy} stroke="#000000" strokeWidth={hThickness + (config.outlineThickness || 2) * scale} strokeOpacity={opacity} strokeLinecap={lineCap} />
+            <line x1={cx + effectiveGap} y1={cy} x2={cx + hLength + effectiveGap} y2={cy} stroke="#000000" strokeWidth={hThickness + (config.outlineThickness || 2) * scale} strokeOpacity={opacity} strokeLinecap={lineCap} />
+            <line x1={cx} y1={cy - vLength - effectiveGap} x2={cx} y2={cy - effectiveGap} stroke="#000000" strokeWidth={vThickness + (config.outlineThickness || 2) * scale} strokeOpacity={opacity} strokeLinecap={lineCap} />
+            <line x1={cx} y1={cy + effectiveGap} x2={cx} y2={cy + vLength + effectiveGap} stroke="#000000" strokeWidth={vThickness + (config.outlineThickness || 2) * scale} strokeOpacity={opacity} strokeLinecap={lineCap} />
           </>
         )}
         <line x1={cx - hLength - effectiveGap} y1={cy} x2={cx - effectiveGap} y2={cy} stroke={strokeRef} strokeWidth={hThickness} strokeOpacity={opacity} strokeLinecap={lineCap} />
@@ -130,10 +131,10 @@ function StaticCrosshair({ config }: { config: CrosshairConfig }) {
         <line x1={cx} y1={cy - vLength - effectiveGap} x2={cx} y2={cy - effectiveGap} stroke={strokeRef} strokeWidth={vThickness} strokeOpacity={opacity} strokeLinecap={lineCap} />
         <line x1={cx} y1={cy + effectiveGap} x2={cx} y2={cy + vLength + effectiveGap} stroke={strokeRef} strokeWidth={vThickness} strokeOpacity={opacity} strokeLinecap={lineCap} />
         {config.centerDot && (
-          <circle cx={cx} cy={cy} r={(config.centerDotSize || 4) / 2} fill={config.centerDotColor || strokeRef} stroke={config.outline ? '#000000' : undefined} strokeWidth={config.outline ? config.outlineThickness || 1 : 0} strokeOpacity={opacity} />
+          <circle cx={cx} cy={cy} r={((config.centerDotSize || 4) / 2) * scale} fill={config.centerDotColor || strokeRef} stroke={config.outline ? '#000000' : undefined} strokeWidth={config.outline ? (config.outlineThickness || 1) * scale : 0} strokeOpacity={opacity} />
         )}
         {config.circle && (
-          <circle cx={cx} cy={cy} r={config.circleRadius || 10} fill="none" stroke={config.circleColor || strokeRef} strokeWidth={config.circleThickness || 1} strokeOpacity={opacity} strokeDasharray={config.circleRadius ? config.circleRadius * 2 * Math.PI : undefined} strokeDashoffset={config.offset || 0} />
+          <circle cx={cx} cy={cy} r={(config.circleRadius || 10) * scale} fill="none" stroke={config.circleColor || strokeRef} strokeWidth={(config.circleThickness || 1) * scale} strokeOpacity={opacity} strokeDasharray={config.circleRadius ? (config.circleRadius * scale) * 2 * Math.PI : undefined} strokeDashoffset={config.offset || 0} />
         )}
       </g>
     </svg>
