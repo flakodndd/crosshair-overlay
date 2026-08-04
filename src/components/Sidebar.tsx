@@ -41,12 +41,12 @@ export function Sidebar({ activeView, onViewChange, currentCrosshair }: SidebarP
       animate={{ width }}
       transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
       style={{
-        background: 'linear-gradient(180deg, rgba(12,12,20,0.98) 0%, rgba(8,8,14,1) 100%)',
-        borderRight: '1px solid rgba(255,255,255,0.04)',
+        background: 'linear-gradient(180deg, rgba(10,10,18,0.99) 0%, rgba(6,6,12,1) 100%)',
+        borderRight: '1px solid rgba(255,255,255,0.05)',
       }}
     >
-      {/* Subtle left edge highlight */}
-      <div className="absolute right-0 inset-y-0 w-px bg-gradient-to-b from-white/[0.04] via-white/[0.02] to-transparent" />
+      {/* Subtle edge glow */}
+      <div className="absolute right-0 inset-y-0 w-px bg-gradient-to-b from-accent-500/10 via-white/[0.03] to-transparent" />
 
       {/* Logo section */}
       <div className="h-[52px] flex items-center px-4 border-b border-white/[0.04]">
@@ -55,7 +55,13 @@ export function Sidebar({ activeView, onViewChange, currentCrosshair }: SidebarP
           animate={{ opacity: collapsed ? 0 : 1 }}
           transition={{ duration: 0.15 }}
         >
-          <div className="w-7 h-7 rounded-lg bg-accent-500/15 flex items-center justify-center flex-shrink-0 ring-1 ring-accent-500/20">
+          <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
+            style={{
+              background: 'linear-gradient(135deg, rgba(99,102,241,0.2) 0%, rgba(99,102,241,0.08) 100%)',
+              boxShadow: '0 0 12px rgba(99,102,241,0.15)',
+              border: '1px solid rgba(99,102,241,0.25)',
+            }}
+          >
             <svg viewBox="0 0 24 24" width="15" height="15" fill="none" className="text-accent-400">
               <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.5" />
               <line x1="12" y1="3" x2="12" y2="8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -96,7 +102,7 @@ export function Sidebar({ activeView, onViewChange, currentCrosshair }: SidebarP
               {/* Active background */}
               {isActive && (
                 <motion.div
-                  className="absolute inset-0 bg-accent-500/10 rounded-lg"
+                  className="absolute inset-0 nav-item-active rounded-lg"
                   layoutId="activeNavBg"
                   transition={{ type: 'spring', stiffness: 350, damping: 30 }}
                 />

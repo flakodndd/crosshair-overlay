@@ -91,7 +91,6 @@ export const useUIStore = create<UIState>()(
       name: 'ui-store',
       partialize: (state) => ({
         sidebarCollapsed: state.sidebarCollapsed,
-        activeView: state.activeView,
         showPreview: state.showPreview,
         previewBackground: state.previewBackground,
         previewZoom: state.previewZoom,

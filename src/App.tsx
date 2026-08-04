@@ -266,7 +266,7 @@ function App() {
       )}
       {!backgroundImage && (
         <div className="absolute inset-0 -z-10" style={{
-          background: 'radial-gradient(ellipse at 50% 0%, rgba(99,102,241,0.04) 0%, transparent 50%), linear-gradient(180deg, #0c0c14 0%, #08080e 100%)',
+          background: 'radial-gradient(ellipse at 30% 0%, rgba(99,102,241,0.06) 0%, transparent 45%), radial-gradient(ellipse at 70% 100%, rgba(99,102,241,0.03) 0%, transparent 40%), linear-gradient(180deg, #0a0a14 0%, #06060c 100%)',
         }} />
       )}
       <TitleBar overlayVisible={visible} onToggleOverlay={handleToggleOverlay} />

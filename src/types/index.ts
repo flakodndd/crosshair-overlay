@@ -11,6 +11,7 @@ export type Category =
   | 'esports'
   | 'fps'
   | 'retro'
+  | 'premium'
   | 'custom';
 
 export type AnimationType =

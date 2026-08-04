@@ -1,5 +1,5 @@
 import { useState, useMemo, useRef, useCallback } from 'react';
-import { Search, Clock, Star, X, Heart, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, Clock, Star, X, Heart, Sparkles, ChevronLeft, ChevronRight, Crown } from 'lucide-react';
 import type { CrosshairConfig } from '../types';
 import { CrosshairCard } from './CrosshairCard';
 import { useCrosshairStore } from '../stores/crosshairStore';
@@ -7,6 +7,7 @@ import { BUILTIN_CROSSHAIRS } from '../data/crosshairs';
 
 const categories = [
   { id: 'all', label: 'All' },
+  { id: 'premium', label: 'Premium' },
   { id: 'dot', label: 'Dot' },
   { id: 'classic', label: 'Classic' },
   { id: 'tactical', label: 'Tactical' },
@@ -78,11 +79,20 @@ export function CrosshairLibrary({ onSelect }: { onSelect?: (c: CrosshairConfig)
   return (
     <div className="flex-1 flex flex-col h-full overflow-hidden">
       {/* Header */}
-      <div className="px-6 pt-5 pb-4 border-b border-white/[0.04]">
+      <div className="px-6 pt-5 pb-4 border-b border-white/[0.04]"
+        style={{
+          background: 'linear-gradient(180deg, rgba(99,102,241,0.03) 0%, transparent 100%)',
+        }}
+      >
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-xl font-bold text-white/90 tracking-tight">Crosshair Library</h1>
-            <p className="text-[11px] text-white/30 mt-0.5">{allCrosshairs.length} crosshairs available</p>
+            <h1 className="text-xl font-bold text-white/90 tracking-tight">
+              Crosshair Library
+              <span className="ml-2 text-[10px] font-semibold text-accent-400 bg-accent-500/10 px-2 py-0.5 rounded-full align-middle ring-1 ring-accent-500/20">
+                {allCrosshairs.length}
+              </span>
+            </h1>
+            <p className="text-[11px] text-white/30 mt-0.5">Premium crosshairs for every playstyle</p>
           </div>
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-medium text-white/30"
@@ -105,18 +115,19 @@ export function CrosshairLibrary({ onSelect }: { onSelect?: (c: CrosshairConfig)
             placeholder="Search crosshairs..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-10 py-2.5 rounded-xl text-[13px] text-white/90 placeholder-white/25 focus:outline-none transition-all"
+            className="w-full pl-10 pr-10 py-2.5 rounded-xl text-[13px] text-white/90 placeholder-white/25 focus:outline-none transition-all duration-200"
             style={{
               background: 'rgba(255,255,255,0.04)',
               border: '1px solid rgba(255,255,255,0.06)',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
             }}
             onFocus={(e) => {
-              e.currentTarget.style.borderColor = 'rgba(99,102,241,0.3)';
-              e.currentTarget.style.boxShadow = '0 0 0 3px rgba(99,102,241,0.1)';
+              e.currentTarget.style.borderColor = 'rgba(99,102,241,0.4)';
+              e.currentTarget.style.boxShadow = '0 0 0 3px rgba(99,102,241,0.1), 0 2px 8px rgba(0,0,0,0.2)';
             }}
             onBlur={(e) => {
               e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)';
-              e.currentTarget.style.boxShadow = 'none';
+              e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.2)';
             }}
           />
           {searchQuery && (
@@ -134,15 +145,17 @@ export function CrosshairLibrary({ onSelect }: { onSelect?: (c: CrosshairConfig)
           {categories.map((cat) => (
             <button
               key={cat.id}
-              className={`px-3 py-1 rounded-lg text-[11px] font-semibold whitespace-nowrap transition-all duration-150 ${
+              className={`px-3 py-1 rounded-lg text-[11px] font-semibold whitespace-nowrap transition-all duration-200 ${
                 activeCategory === cat.id
-                  ? 'bg-accent-500 text-white shadow-[0_0_12px_rgba(99,102,241,0.3)]'
-                  : 'text-white/35 hover:text-white/55 hover:bg-white/[0.04]'
+                  ? 'bg-accent-500 text-white shadow-[0_0_16px_rgba(99,102,241,0.35)]'
+                  : 'text-white/35 hover:text-white/60 hover:bg-white/[0.06]'
               }`}
               style={activeCategory !== cat.id ? {
                 background: 'rgba(255,255,255,0.03)',
                 border: '1px solid rgba(255,255,255,0.04)',
-              } : undefined}
+              } : {
+                boxShadow: '0 0 16px rgba(99,102,241,0.35), inset 0 1px 0 rgba(255,255,255,0.1)',
+              }}
               onClick={() => setActiveCategory(cat.id)}
             >
               {cat.label}

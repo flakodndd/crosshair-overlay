@@ -24,29 +24,32 @@ const categoryLabels: Record<string, string> = {
   esports: 'Esports',
   fps: 'FPS',
   retro: 'Retro',
+  premium: 'Premium',
   custom: 'Custom',
 };
 
 export const CrosshairCard = React.memo(function CrosshairCard({ crosshair, selected = false, onSelect, onFavorite }: CrosshairCardProps) {
   const favorites = useCrosshairStore((s) => s.favorites);
   const isFavorited = favorites.includes(crosshair.id);
+  const isPremium = crosshair.category === 'premium';
 
   return (
     <div
       className={`
         relative group cursor-pointer rounded-xl
-        transition-all duration-150 ease-out
+        transition-all duration-200 ease-out
         ${selected
-          ? 'ring-2 ring-accent-500/50 shadow-lg shadow-accent-500/10'
-          : 'hover:shadow-lg hover:shadow-black/30 hover:-translate-y-0.5 hover:scale-[1.02]'
+          ? 'ring-2 ring-accent-500/60 shadow-lg shadow-accent-500/15'
+          : 'hover:shadow-xl hover:shadow-black/40 hover:-translate-y-0.5 hover:scale-[1.02]'
         }
         active:scale-[0.97]
       `}
       style={{
         background: selected
-          ? 'linear-gradient(135deg, rgba(99,102,241,0.08) 0%, rgba(99,102,241,0.03) 100%)'
-          : 'linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.02) 100%)',
-        border: `1px solid ${selected ? 'rgba(99,102,241,0.3)' : 'rgba(255,255,255,0.05)'}`,
+          ? 'linear-gradient(135deg, rgba(99,102,241,0.1) 0%, rgba(99,102,241,0.03) 100%)'
+          : 'linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.015) 100%)',
+        border: `1px solid ${selected ? 'rgba(99,102,241,0.35)' : isPremium ? 'rgba(245,158,11,0.15)' : 'rgba(255,255,255,0.05)'}`,
+        boxShadow: isPremium && !selected ? '0 0 20px rgba(245,158,11,0.05)' : undefined,
       }}
       onClick={() => onSelect(crosshair)}
     >
@@ -65,10 +68,12 @@ export const CrosshairCard = React.memo(function CrosshairCard({ crosshair, sele
         <CrosshairRenderer config={crosshair} size={56} />
 
         {/* Category badge */}
-        <span className="absolute top-2 left-2 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider rounded-md bg-white/[0.06] text-white/40 backdrop-blur-sm"
-          style={{ border: '1px solid rgba(255,255,255,0.06)' }}
+        <span className={`absolute top-2 left-2 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider rounded-md backdrop-blur-sm ${
+          isPremium ? 'premium-badge' : 'bg-white/[0.06] text-white/40'
+        }`}
+          style={!isPremium ? { border: '1px solid rgba(255,255,255,0.06)' } : undefined}
         >
-          {categoryLabels[crosshair.category] || crosshair.category}
+          {isPremium ? 'Premium' : categoryLabels[crosshair.category] || crosshair.category}
         </span>
 
         {/* Favorite button */}
