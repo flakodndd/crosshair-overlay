@@ -28,127 +28,189 @@
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
       opacity: 0;
-      animation: fadeIn 0.3s ease 0.1s forwards;
+      animation: fadeIn 0.35s ease 0.1s forwards;
     }
 
-    @keyframes fadeIn {
-      to { opacity: 1; }
-    }
+    @keyframes fadeIn { to { opacity: 1; } }
 
-    .ring-container {
-      width: 72px; height: 72px;
+    .crosshair-anim {
+      width: 120px; height: 120px;
       position: relative;
-      margin-bottom: 20px;
+      margin-bottom: 28px;
     }
 
-    .ring-container svg {
-      width: 100%; height: 100%;
-      animation: rotateRing 2s linear infinite;
+    .ch-line {
+      position: absolute;
+      background: #818cf8;
+      border-radius: 2px;
+      opacity: 0;
+    }
+    .ch-line.h {
+      width: 0; height: 3px;
+      top: 50%; transform: translateY(-50%);
+    }
+    .ch-line.h.left {
+      right: 50%; margin-right: 8px;
+      animation: expandLeft 0.5s ease 0.2s forwards;
+    }
+    .ch-line.h.right {
+      left: 50%; margin-left: 8px;
+      animation: expandRight 0.5s ease 0.2s forwards;
+    }
+    .ch-line.v {
+      height: 0; width: 3px;
+      left: 50%; transform: translateX(-50%);
+    }
+    .ch-line.v.top {
+      bottom: 50%; margin-bottom: 8px;
+      animation: expandUp 0.5s ease 0.2s forwards;
+    }
+    .ch-line.v.bottom {
+      top: 50%; margin-top: 8px;
+      animation: expandDown 0.5s ease 0.2s forwards;
     }
 
-    @keyframes rotateRing {
-      to { transform: rotate(360deg); }
-    }
-
-    .ring-container .center-dot {
+    .ch-dot {
       position: absolute;
       top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      width: 12px; height: 12px;
-      background: #818cf8;
+      width: 8px; height: 8px;
+      background: #c4b5fd;
       border-radius: 50%;
-      animation: dotPulse 1s ease-in-out infinite;
-      box-shadow: 0 0 20px rgba(129, 140, 248, 0.5);
-    }
-
-    @keyframes dotPulse {
-      0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
-      50% { transform: translate(-50%, -50%) scale(1.3); opacity: 1; }
-    }
-
-    .status {
-      font-size: 13px;
-      color: #9ca3af;
-      letter-spacing: 0.3px;
-      margin-bottom: 16px;
+      transform: translate(-50%, -50%);
       opacity: 0;
-      animation: fadeSlideUp 0.4s ease 0.3s forwards;
+      animation: dotPop 0.4s ease 0.15s forwards;
+      box-shadow: 0 0 16px rgba(196,181,253,0.6);
     }
 
-    @keyframes fadeSlideUp {
-      from { opacity: 0; transform: translateY(6px); }
+    .ch-ring {
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 40px; height: 40px;
+      border: 1.5px solid rgba(99,102,241,0.3);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      opacity: 0;
+      animation: ringExpand 0.6s ease 0.3s forwards;
+    }
+
+    @keyframes expandLeft { to { width: 35px; opacity: 1; } }
+    @keyframes expandRight { to { width: 35px; opacity: 1; } }
+    @keyframes expandUp { to { height: 35px; opacity: 1; } }
+    @keyframes expandDown { to { height: 35px; opacity: 1; } }
+    @keyframes dotPop { to { opacity: 1; } }
+    @keyframes ringExpand { to { width: 80px; height: 80px; opacity: 0; } }
+
+    .collapse-anim {
+      margin-bottom: 24px;
+      opacity: 0;
+      animation: collapseIn 0.8s ease 1s forwards;
+    }
+
+    @keyframes collapseIn {
+      0% { opacity: 1; transform: scale(1); }
+      60% { opacity: 1; transform: scale(0.3); }
+      100% { opacity: 0; transform: scale(0.1); }
+    }
+
+    .messages {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 6px;
+    }
+
+    .msg-main {
+      font-size: 15px;
+      color: #e5e7eb;
+      letter-spacing: 0.3px;
+      opacity: 0;
+      animation: slideUp 0.4s ease 0.4s forwards;
+    }
+
+    .msg-sub {
+      font-size: 11px;
+      color: #6b7280;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      opacity: 0;
+      animation: slideUp 0.4s ease 0.6s forwards;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(8px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    .progress-container {
-      width: 140px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
+    .progress-wrap {
+      margin-top: 20px;
+      width: 160px;
       opacity: 0;
-      animation: fadeSlideUp 0.4s ease 0.4s forwards;
+      animation: slideUp 0.4s ease 0.7s forwards;
     }
 
-    .progress-track {
+    .progress-bg {
       width: 100%; height: 3px;
       background: rgba(255,255,255,0.06);
       border-radius: 2px;
       overflow: hidden;
-    }
-
-    .progress-fill {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, #6366f1, #818cf8, #a5b4fc);
-      border-radius: 2px;
-      animation: fillBar 1.2s ease 0.5s forwards;
       position: relative;
     }
 
-    .progress-fill::after {
-      content: '';
-      position: absolute;
-      right: 0; top: -1px;
-      width: 6px; height: 5px;
-      background: #c4b5fd;
-      border-radius: 50%;
-      box-shadow: 0 0 8px rgba(196, 181, 253, 0.6);
+    .progress-fill {
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, #4f46e5, #818cf8, #a5b4fc);
+      border-radius: 2px;
+      animation: fillIt 1.4s ease 0.8s forwards;
     }
 
-    @keyframes fillBar {
-      to { width: 100%; }
-    }
+    @keyframes fillIt { to { width: 100%; } }
 
-    .bye {
+    .progress-percent {
       font-size: 10px;
       color: #4b5563;
-      letter-spacing: 2.5px;
-      text-transform: uppercase;
-      opacity: 0;
-      animation: fadeSlideUp 0.3s ease 1s forwards;
+      text-align: center;
+      margin-top: 8px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .fade-out {
+      animation: fadeOutWhole 0.5s ease 1.8s forwards;
+    }
+
+    @keyframes fadeOutWhole {
+      to { opacity: 0; filter: blur(8px); transform: scale(1.05); }
     }
   </style>
 </head>
 <body>
   <canvas id="bg"></canvas>
 
-  <div class="content">
-    <div class="ring-container">
-      <svg viewBox="0 0 72 72" fill="none">
-        <circle cx="36" cy="36" r="30" stroke="rgba(99,102,241,0.15)" stroke-width="1.5" />
-        <path d="M36 6 A30 30 0 0 1 66 36" stroke="#6366f1" stroke-width="2" stroke-linecap="round" />
-        <path d="M66 36 A30 30 0 0 1 36 66" stroke="#818cf8" stroke-width="2" stroke-linecap="round" opacity="0.6" />
+  <div class="content fade-out" id="content">
+    <div class="crosshair-anim" id="crosshair">
+      <div class="ch-dot"></div>
+      <div class="ch-ring"></div>
+      <div class="ch-line h left"></div>
+      <div class="ch-line h right"></div>
+      <div class="ch-line v top"></div>
+      <div class="ch-line v bottom"></div>
+    </div>
+    <div class="collapse-anim">
+      <svg width="40" height="40" viewBox="0 0 80 80" fill="none">
+        <circle cx="40" cy="40" r="38" stroke="#6366f1" stroke-width="2" opacity="0.3"/>
+        <circle cx="40" cy="40" r="28" stroke="#818cf8" stroke-width="1.5" opacity="0.5"/>
+        <line x1="40" y1="8" x2="40" y2="26" stroke="#818cf8" stroke-width="2" stroke-linecap="round"/>
+        <line x1="40" y1="54" x2="40" y2="72" stroke="#818cf8" stroke-width="2" stroke-linecap="round"/>
+        <line x1="8" y1="40" x2="26" y2="40" stroke="#818cf8" stroke-width="2" stroke-linecap="round"/>
+        <line x1="54" y1="40" x2="72" y2="40" stroke="#818cf8" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="40" cy="40" r="3" fill="#c4b5fd"/>
       </svg>
-      <div class="center-dot"></div>
     </div>
-    <div class="status" id="statusText">Saving your settings...</div>
-    <div class="progress-container">
-      <div class="progress-track">
-        <div class="progress-fill"></div>
-      </div>
+    <div class="messages">
+      <div class="msg-main" id="msgMain">Saving your settings</div>
+      <div class="msg-sub">See you next time</div>
     </div>
-    <div class="bye">See you next time</div>
+    <div class="progress-wrap">
+      <div class="progress-bg"><div class="progress-fill"></div></div>
+      <div class="progress-percent" id="pct">0%</div>
+    </div>
   </div>
 
   <script>
@@ -156,10 +218,7 @@
     const cx = cv.getContext('2d');
     let pts = [];
 
-    function resize() {
-      cv.width = innerWidth;
-      cv.height = innerHeight;
-    }
+    function resize() { cv.width = innerWidth; cv.height = innerHeight; }
     resize();
     addEventListener('resize', resize);
 
@@ -167,32 +226,36 @@
       constructor() { this.reset(); }
       reset() {
         this.x = Math.random() * cv.width;
-        this.y = Math.random() * cv.height;
-        this.size = Math.random() * 1.5 + 0.3;
-        this.vx = (Math.random() - 0.5) * 0.15;
-        this.vy = -Math.random() * 0.3 - 0.05;
-        this.opacity = Math.random() * 0.3 + 0.05;
-        this.hue = 230 + Math.random() * 30;
+        this.y = cv.height + Math.random() * 20;
+        this.size = Math.random() * 1.8 + 0.3;
+        this.vx = (Math.random() - 0.5) * 0.4;
+        this.vy = -(Math.random() * 1.2 + 0.3);
+        this.opacity = Math.random() * 0.4 + 0.1;
+        this.hue = 230 + Math.random() * 40;
         this.life = 1;
+        this.decay = 0.003 + Math.random() * 0.004;
       }
       update() {
         this.x += this.vx;
         this.y += this.vy;
-        this.life -= 0.002;
-        if (this.life <= 0 || this.y < -10 || this.x < -10 || this.x > cv.width + 10) {
-          this.reset();
-          this.y = cv.height + 5;
-        }
+        this.vy *= 0.998;
+        this.life -= this.decay;
+        if (this.life <= 0 || this.y < -20) this.reset();
       }
       draw() {
         cx.beginPath();
         cx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        cx.fillStyle = `hsla(${this.hue}, 70%, 70%, ${this.opacity * this.life})`;
+        cx.fillStyle = `hsla(${this.hue}, 65%, 72%, ${this.opacity * Math.max(0, this.life)})`;
         cx.fill();
       }
     }
 
-    for (let i = 0; i < 35; i++) pts.push(new P());
+    for (let i = 0; i < 80; i++) {
+      const p = new P();
+      p.y = Math.random() * cv.height;
+      p.life = Math.random();
+      pts.push(p);
+    }
 
     (function loop() {
       cx.clearRect(0, 0, cv.width, cv.height);
@@ -200,13 +263,20 @@
       requestAnimationFrame(loop);
     })();
 
-    const msgs = ['Saving your settings...', 'Almost done...'];
-    let idx = 0;
-    setInterval(() => {
-      idx = Math.min(idx + 1, msgs.length - 1);
-      const el = document.getElementById('statusText');
-      if (el) el.textContent = msgs[idx];
-    }, 700);
+    const pctEl = document.getElementById('pct');
+    const msgEl = document.getElementById('msgMain');
+    let progress = 0;
+    const start = Date.now();
+    const duration = 1400;
+
+    function updateProgress() {
+      const elapsed = Date.now() - start;
+      progress = Math.min(100, Math.round((elapsed / duration) * 100));
+      pctEl.textContent = progress + '%';
+      if (progress >= 50) msgEl.textContent = 'Almost done';
+      if (progress < 100) requestAnimationFrame(updateProgress);
+    }
+    setTimeout(updateProgress, 800);
   </script>
 </body>
 </html>

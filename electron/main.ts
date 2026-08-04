@@ -33,6 +33,25 @@ export function getMainWindow(): BrowserWindow | null {
   return null;
 }
 
+function startQuitSequence(): void {
+  if (isQuitting) return;
+  isQuitting = true;
+
+  unregisterAllHotkeys();
+  destroyOverlay();
+  destroyTray();
+
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.hide();
+  }
+
+  createLoadingWindow();
+
+  setTimeout(() => {
+    app.exit(0);
+  }, 2000);
+}
+
 function createWelcomeWindow(): BrowserWindow {
   const primaryDisplay = screen.getPrimaryDisplay();
   const { width: screenWidth, height: screenHeight } = primaryDisplay.workAreaSize;
@@ -91,8 +110,8 @@ function createLoadingWindow(): BrowserWindow {
   const primaryDisplay = screen.getPrimaryDisplay();
   const { width: screenWidth, height: screenHeight } = primaryDisplay.workAreaSize;
 
-  const windowWidth = 320;
-  const windowHeight = 180;
+  const windowWidth = 400;
+  const windowHeight = 300;
   const x = Math.round((screenWidth - windowWidth) / 2);
   const y = Math.round((screenHeight - windowHeight) / 2);
 
@@ -119,11 +138,11 @@ function createLoadingWindow(): BrowserWindow {
 
   loadingWindow.setMenuBarVisibility(false);
 
-  const isPackaged2 = app.isPackaged;
-  const loadingPath = isPackaged2
+  const isPackaged = app.isPackaged;
+  const loadingPath = isPackaged
     ? path.join(process.resourcesPath, 'loading.html')
     : path.join(__dirname, '../loading.html');
-  console.log('[Loading] Loading:', loadingPath, 'packaged:', isPackaged2);
+  console.log('[Loading] Loading:', loadingPath, 'packaged:', isPackaged);
   loadingWindow.loadFile(loadingPath).catch((err) => {
     console.error('[Loading] Failed to load:', err);
   });
@@ -194,11 +213,8 @@ function createMainWindow(): BrowserWindow {
 
   mainWindow.on('close', (event) => {
     if (isQuitting) return;
-    const settingsInstance = getSettings();
-    if (settingsInstance.get('minimizeToTray')) {
-      event.preventDefault();
-      mainWindow?.hide();
-    }
+    event.preventDefault();
+    startQuitSequence();
   });
 
   mainWindow.on('closed', () => {
@@ -283,11 +299,7 @@ function setupIpcHandlers(): void {
   });
 
   ipcMain.on('app:quit', () => {
-    isQuitting = true;
-    if (mainWindow && !mainWindow.isDestroyed()) {
-      mainWindow.hide();
-    }
-    app.quit();
+    startQuitSequence();
   });
 
   ipcMain.on('app:minimize', () => {
@@ -385,7 +397,7 @@ if (!gotTheLock) {
     }
   });
 
-app.whenReady().then(() => {
+  app.whenReady().then(() => {
     app.setAppUserModelId('com.crosshair.overlay');
 
     setupIpcHandlers();
@@ -407,22 +419,7 @@ app.whenReady().then(() => {
   });
 
   app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') {
-      app.quit();
-    }
-  });
-
-  app.on('before-quit', (event) => {
-    if (loadingWindow && !loadingWindow.isDestroyed()) return;
-    isQuitting = true;
-    unregisterAllHotkeys();
-    destroyOverlay();
-    destroyTray();
-    createLoadingWindow();
-    event.preventDefault();
-    setTimeout(() => {
-      app.quit();
-    }, 1500);
+    app.exit(0);
   });
 
   app.on('will-quit', () => {
