@@ -10,6 +10,16 @@
     "node_modules/**/*",
     "package.json"
   ],
+  "extraResources": [
+    {
+      "from": "welcome.html",
+      "to": "welcome.html"
+    },
+    {
+      "from": "loading.html",
+      "to": "loading.html"
+    }
+  ],
   "publish": [
     {
       "provider": "github",

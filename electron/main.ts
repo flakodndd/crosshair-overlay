@@ -64,8 +64,11 @@ function createWelcomeWindow(): BrowserWindow {
 
   welcomeWindow.setMenuBarVisibility(false);
 
-  const welcomePath = path.join(__dirname, '../welcome.html');
-  console.log('[Welcome] Loading:', welcomePath);
+  const isPackaged = app.isPackaged;
+  const welcomePath = isPackaged
+    ? path.join(process.resourcesPath, 'welcome.html')
+    : path.join(__dirname, '../welcome.html');
+  console.log('[Welcome] Loading:', welcomePath, 'packaged:', isPackaged);
   welcomeWindow.loadFile(welcomePath).catch((err) => {
     console.error('[Welcome] Failed to load:', err);
   });
@@ -115,8 +118,11 @@ function createLoadingWindow(): BrowserWindow {
 
   loadingWindow.setMenuBarVisibility(false);
 
-  const loadingPath = path.join(__dirname, '../loading.html');
-  console.log('[Loading] Loading:', loadingPath);
+  const isPackaged2 = app.isPackaged;
+  const loadingPath = isPackaged2
+    ? path.join(process.resourcesPath, 'loading.html')
+    : path.join(__dirname, '../loading.html');
+  console.log('[Loading] Loading:', loadingPath, 'packaged:', isPackaged2);
   loadingWindow.loadFile(loadingPath).catch((err) => {
     console.error('[Loading] Failed to load:', err);
   });
