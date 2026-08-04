@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Minus, Square, X, Eye, EyeOff, Settings } from 'lucide-react';
+import { Minus, Square, X, Eye, EyeOff } from 'lucide-react';
 
 interface TitleBarProps {
   overlayVisible?: boolean;
@@ -11,73 +11,63 @@ interface TitleBarProps {
 export function TitleBar({
   overlayVisible = true,
   onToggleOverlay,
-  onOpenSettings,
 }: TitleBarProps) {
-  const [hovered, setHovered] = useState<string | null>(null);
-
   return (
     <div
-      className="h-[36px] flex items-center justify-between bg-[#0e0e16]/95 backdrop-blur-xl border-b border-white/[0.06] select-none"
+      className="h-[38px] flex items-center justify-between bg-[#0a0a12]/90 backdrop-blur-2xl border-b border-white/[0.06] select-none relative"
       style={{ WebkitAppRegion: 'drag' } as React.CSSProperties}
     >
+      {/* Subtle top highlight */}
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" />
+
       {/* Left section - App info */}
-      <div className="flex items-center gap-2 pl-3">
-        {/* App icon */}
-        <div className="w-5 h-5 flex items-center justify-center">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" className="text-accent-500">
-            <circle cx="12" cy="12" r="4" />
-            <line x1="12" y1="2" x2="12" y2="8" />
-            <line x1="12" y1="16" x2="12" y2="22" />
-            <line x1="2" y1="12" x2="8" y2="12" />
-            <line x1="16" y1="12" x2="22" y2="12" />
+      <div className="flex items-center gap-2.5 pl-4">
+        <div className="relative w-5 h-5 flex items-center justify-center">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" className="text-accent-400">
+            <circle cx="12" cy="12" r="3.5" stroke="currentColor" strokeWidth="1.5" />
+            <line x1="12" y1="2.5" x2="12" y2="7.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            <line x1="12" y1="16.5" x2="12" y2="21.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            <line x1="2.5" y1="12" x2="7.5" y2="12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            <line x1="16.5" y1="12" x2="21.5" y2="12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            <circle cx="12" cy="12" r="1" fill="currentColor" />
           </svg>
         </div>
-
-        {/* App name */}
-        <span className="text-sm font-semibold text-white/90 tracking-tight">
+        <span className="text-[13px] font-semibold text-white/80 tracking-tight">
           CrosshairOverlay
         </span>
+        <span className="text-[10px] text-white/20 font-medium tracking-widest uppercase ml-0.5">Pro</span>
       </div>
 
       {/* Center section - Controls */}
       <div
-        className="flex items-center gap-1"
+        className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1"
         style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
       >
         {/* Overlay toggle */}
         <motion.button
           className={`
-            p-1.5 rounded-md transition-colors
+            flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-medium transition-all
             ${overlayVisible
-              ? 'bg-accent-500/20 text-accent-400 hover:bg-accent-500/30'
+              ? 'bg-accent-500/15 text-accent-400 shadow-[0_0_12px_rgba(99,102,241,0.15)]'
               : 'text-white/40 hover:bg-white/5 hover:text-white/60'
             }
           `}
-          onMouseEnter={() => setHovered('overlay')}
-          onMouseLeave={() => setHovered(null)}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.97 }}
           onClick={onToggleOverlay}
           title={overlayVisible ? 'Hide overlay' : 'Show overlay'}
         >
           {overlayVisible ? (
-            <Eye className="w-4 h-4" />
+            <>
+              <Eye className="w-3.5 h-3.5" />
+              <span>Overlay On</span>
+            </>
           ) : (
-            <EyeOff className="w-4 h-4" />
+            <>
+              <EyeOff className="w-3.5 h-3.5" />
+              <span>Overlay Off</span>
+            </>
           )}
-        </motion.button>
-
-        {/* Settings */}
-        <motion.button
-          className="p-1.5 rounded-md text-white/40 hover:bg-white/5 hover:text-white/60 transition-colors"
-          onMouseEnter={() => setHovered('settings')}
-          onMouseLeave={() => setHovered(null)}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={onOpenSettings}
-          title="Settings"
-        >
-          <Settings className="w-4 h-4" />
         </motion.button>
       </div>
 
@@ -86,43 +76,29 @@ export function TitleBar({
         className="flex items-center"
         style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
       >
-        {/* Minimize */}
         <motion.button
-          className="h-[36px] w-[46px] flex items-center justify-center text-white/40 hover:bg-white/5 hover:text-white/60 transition-colors"
-          onMouseEnter={() => setHovered('minimize')}
-          onMouseLeave={() => setHovered(null)}
-          whileHover={{ backgroundColor: 'rgba(255,255,255,0.05)' }}
-          whileTap={{ scale: 0.95 }}
+          className="h-[38px] w-[44px] flex items-center justify-center text-white/30 hover:bg-white/[0.06] hover:text-white/60 transition-colors"
+          whileTap={{ scale: 0.9 }}
           onClick={() => window.electronAPI?.app?.minimize()}
           title="Minimize"
         >
-          <Minus className="w-4 h-4" />
+          <Minus className="w-3.5 h-3.5" />
         </motion.button>
-
-        {/* Maximize */}
         <motion.button
-          className="h-[36px] w-[46px] flex items-center justify-center text-white/40 hover:bg-white/5 hover:text-white/60 transition-colors"
-          onMouseEnter={() => setHovered('maximize')}
-          onMouseLeave={() => setHovered(null)}
-          whileHover={{ backgroundColor: 'rgba(255,255,255,0.05)' }}
-          whileTap={{ scale: 0.95 }}
+          className="h-[38px] w-[44px] flex items-center justify-center text-white/30 hover:bg-white/[0.06] hover:text-white/60 transition-colors"
+          whileTap={{ scale: 0.9 }}
           onClick={() => window.electronAPI?.app?.maximize()}
           title="Maximize"
         >
-          <Square className="w-3.5 h-3.5" />
+          <Square className="w-3 h-3" />
         </motion.button>
-
-        {/* Close */}
         <motion.button
-          className="h-[36px] w-[46px] flex items-center justify-center text-white/40 hover:bg-red-500 hover:text-white transition-colors"
-          onMouseEnter={() => setHovered('close')}
-          onMouseLeave={() => setHovered(null)}
-          whileHover={{ backgroundColor: 'rgb(239, 68, 68)' }}
-          whileTap={{ scale: 0.95 }}
+          className="h-[38px] w-[44px] flex items-center justify-center text-white/30 hover:bg-red-500/90 hover:text-white transition-colors rounded-tr-lg"
+          whileTap={{ scale: 0.9 }}
           onClick={() => window.electronAPI?.app?.quit()}
           title="Close"
         >
-          <X className="w-4 h-4" />
+          <X className="w-3.5 h-3.5" />
         </motion.button>
       </div>
     </div>

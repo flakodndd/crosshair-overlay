@@ -76,8 +76,8 @@ interface SliderProps {
 
 function Slider({ label, value, min, max, step = 1, onChange, unit = '' }: SliderProps) {
   return (
-    <div className="flex items-center gap-3">
-      <span className="text-xs text-white/50 w-16 shrink-0">{label}</span>
+    <div className="flex items-center gap-3 py-1">
+      <span className="text-[11px] text-white/40 w-16 shrink-0 font-medium">{label}</span>
       <div className="flex-1 relative">
         <input
           type="range"
@@ -86,15 +86,15 @@ function Slider({ label, value, min, max, step = 1, onChange, unit = '' }: Slide
           step={step}
           value={value}
           onChange={(e) => onChange(Number(e.target.value))}
-          className="w-full h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer
+          className="w-full h-1 bg-white/[0.06] rounded-full appearance-none cursor-pointer
             [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3.5 [&::-webkit-slider-thumb]:h-3.5
             [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-accent-500
-            [&::-webkit-slider-thumb]:shadow-[0_0_6px_rgba(99,102,241,0.5)]
-            [&::-webkit-slider-thumb]:hover:bg-accent-400 [&::-webkit-slider-thumb]:transition-colors
-            [&::-webkit-slider-thumb]:cursor-pointer"
+            [&::-webkit-slider-thumb]:shadow-[0_0_0_3px_rgba(99,102,241,0.15),0_0_8px_rgba(99,102,241,0.3)]
+            [&::-webkit-slider-thumb]:hover:bg-accent-400 [&::-webkit-slider-thumb]:hover:scale-110
+            [&::-webkit-slider-thumb]:transition-all [&::-webkit-slider-thumb]:cursor-pointer"
         />
       </div>
-      <span className="text-xs text-white/70 w-10 text-right tabular-nums">
+      <span className="text-[11px] text-white/50 w-10 text-right tabular-nums font-mono">
         {typeof value === 'number' ? (step < 1 ? value.toFixed(1) : value) : value}{unit}
       </span>
     </div>
@@ -110,19 +110,21 @@ interface ToggleProps {
 
 function Toggle({ label, enabled, onChange, icon }: ToggleProps) {
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex items-center justify-between py-1">
       <div className="flex items-center gap-2">
         {icon}
-        <span className="text-xs text-white/50">{label}</span>
+        <span className="text-[11px] text-white/45 font-medium">{label}</span>
       </div>
       <button
         onClick={() => onChange(!enabled)}
-        className={`relative w-9 h-5 rounded-full transition-colors duration-200 ${
-          enabled ? 'bg-accent-500' : 'bg-white/10'
+        className={`relative w-8 h-[18px] rounded-full transition-all duration-200 ${
+          enabled
+            ? 'bg-accent-500 shadow-[0_0_8px_rgba(99,102,241,0.3)]'
+            : 'bg-white/[0.08]'
         }`}
       >
         <motion.div
-          className="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow-sm"
+          className="absolute top-[2px] left-[2px] w-[14px] h-[14px] rounded-full bg-white shadow-sm"
           animate={{ x: enabled ? 16 : 0 }}
           transition={{ type: 'spring', stiffness: 500, damping: 30 }}
         />
@@ -148,12 +150,12 @@ function ColorPicker({ label, color, onChange }: ColorPickerProps) {
   };
 
   return (
-    <div className="space-y-2">
-      <span className="text-xs text-white/50">{label}</span>
+    <div className="space-y-1.5 py-1">
+      <span className="text-[11px] text-white/40 font-medium">{label}</span>
       <div className="flex items-center gap-2">
-        <label className="relative cursor-pointer">
+        <label className="relative cursor-pointer group">
           <div
-            className="w-8 h-8 rounded-lg border-2 border-white/10 hover:border-white/20 transition-colors"
+            className="w-7 h-7 rounded-lg ring-1 ring-white/10 group-hover:ring-white/20 transition-all"
             style={{ backgroundColor: color }}
           />
           <input
@@ -171,8 +173,15 @@ function ColorPicker({ label, color, onChange }: ColorPickerProps) {
           value={hexInput}
           onChange={(e) => handleHexChange(e.target.value)}
           onBlur={() => setHexInput(color)}
-          className="flex-1 px-2.5 py-1.5 bg-white/5 border border-white/10 rounded-lg text-xs text-white/80
-            font-mono focus:outline-none focus:border-accent-500/50 focus:ring-1 focus:ring-accent-500/20 transition-all"
+          className="flex-1 px-2 py-1 rounded-lg text-[11px] text-white/70 font-mono"
+          style={{
+            background: 'rgba(255,255,255,0.04)',
+            border: '1px solid rgba(255,255,255,0.06)',
+          }}
+          onFocus={(e) => {
+            e.currentTarget.style.borderColor = 'rgba(99,102,241,0.3)';
+          }}
+          onBlurCapture={() => {}}
           placeholder="#ffffff"
         />
       </div>
@@ -191,20 +200,20 @@ function Section({ title, icon, defaultOpen = false, children }: SectionProps) {
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
-    <div className="border-b border-white/5 last:border-b-0">
+    <div className="border-b border-white/[0.04] last:border-b-0">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-4 py-3 hover:bg-white/[0.02] transition-colors"
+        className="w-full flex items-center justify-between px-4 py-2.5 hover:bg-white/[0.02] transition-colors"
       >
         <div className="flex items-center gap-2">
-          <span className="text-accent-400">{icon}</span>
-          <span className="text-sm font-medium text-white/80">{title}</span>
+          <span className="text-accent-400/70">{icon}</span>
+          <span className="text-[12px] font-semibold text-white/65">{title}</span>
         </div>
         <motion.div
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.2 }}
         >
-          <ChevronDown className="w-4 h-4 text-white/30" />
+          <ChevronDown className="w-3.5 h-3.5 text-white/25" />
         </motion.div>
       </button>
       <AnimatePresence initial={false}>
@@ -216,7 +225,7 @@ function Section({ title, icon, defaultOpen = false, children }: SectionProps) {
             transition={{ duration: 0.2, ease: 'easeInOut' }}
             className="overflow-hidden"
           >
-            <div className="px-4 pb-4 space-y-3">
+            <div className="px-4 pb-3 space-y-2">
               {children}
             </div>
           </motion.div>
@@ -293,51 +302,54 @@ export function CrosshairCreator() {
   return (
     <div className="flex h-full bg-[#0f0f1a]">
       {/* LEFT SIDE - Preview */}
-      <div className="flex-1 flex flex-col border-r border-white/5">
+      <div className="flex-1 flex flex-col" style={{ borderRight: '1px solid rgba(255,255,255,0.04)' }}>
         {/* Preview Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-white/5">
+        <div className="flex items-center justify-between px-4 py-2.5 border-b border-white/[0.04]">
           <div className="flex items-center gap-2">
-            <Crosshair className="w-4 h-4 text-accent-400" />
-            <span className="text-sm font-medium text-white/80">Live Preview</span>
+            <Crosshair className="w-3.5 h-3.5 text-accent-400/70" />
+            <span className="text-[12px] font-semibold text-white/65">Live Preview</span>
           </div>
           <div className="flex items-center gap-1">
             <button
               onClick={() => setShowGrid(!showGrid)}
-              className={`p-1.5 rounded-lg transition-colors ${
-                showGrid ? 'bg-accent-500/20 text-accent-400' : 'text-white/30 hover:text-white/50 hover:bg-white/5'
+              className={`p-1.5 rounded-lg transition-all ${
+                showGrid ? 'bg-accent-500/15 text-accent-400' : 'text-white/25 hover:text-white/50 hover:bg-white/[0.04]'
               }`}
               title="Toggle grid"
             >
-              <Grid3X3 className="w-4 h-4" />
+              <Grid3X3 className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={() => setZoom(Math.max(0.5, zoom - 0.25))}
-              className="p-1.5 rounded-lg text-white/30 hover:text-white/50 hover:bg-white/5 transition-colors"
+              className="p-1.5 rounded-lg text-white/25 hover:text-white/50 hover:bg-white/[0.04] transition-all"
               title="Zoom out"
             >
-              <ZoomOut className="w-4 h-4" />
+              <ZoomOut className="w-3.5 h-3.5" />
             </button>
-            <span className="text-xs text-white/40 w-10 text-center">{Math.round(zoom * 100)}%</span>
+            <span className="text-[10px] text-white/30 w-8 text-center font-mono">{Math.round(zoom * 100)}%</span>
             <button
               onClick={() => setZoom(Math.min(3, zoom + 0.25))}
-              className="p-1.5 rounded-lg text-white/30 hover:text-white/50 hover:bg-white/5 transition-colors"
+              className="p-1.5 rounded-lg text-white/25 hover:text-white/50 hover:bg-white/[0.04] transition-all"
               title="Zoom in"
             >
-              <ZoomIn className="w-4 h-4" />
+              <ZoomIn className="w-3.5 h-3.5" />
             </button>
           </div>
         </div>
 
         {/* Preview Area */}
-        <div className="flex-1 flex items-center justify-center relative overflow-hidden">
+        <div className="flex-1 flex items-center justify-center relative overflow-hidden"
+          style={{ background: 'rgba(255,255,255,0.01)' }}
+        >
           <div
             ref={previewRef}
-            className="relative"
+            className="relative rounded-xl overflow-hidden"
             style={{
               width: previewSize,
               height: previewSize,
-              backgroundColor: '#1a1a2e',
-              borderRadius: 12,
+              background: 'linear-gradient(135deg, #16162a 0%, #12121f 100%)',
+              border: '1px solid rgba(255,255,255,0.05)',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.03)',
             }}
           >
             {showGrid && (
@@ -386,12 +398,17 @@ export function CrosshairCreator() {
       </div>
 
       {/* RIGHT SIDE - Editor Panel */}
-      <div className="w-[380px] flex flex-col bg-[#12121f] overflow-hidden">
+      <div className="w-[360px] flex flex-col overflow-hidden"
+        style={{
+          background: 'linear-gradient(180deg, rgba(14,14,22,0.98) 0%, rgba(10,10,16,1) 100%)',
+          borderLeft: '1px solid rgba(255,255,255,0.04)',
+        }}
+      >
         {/* Editor Header */}
-        <div className="px-4 py-3 border-b border-white/5">
+        <div className="px-4 py-2.5 border-b border-white/[0.04]">
           <div className="flex items-center gap-2">
-            <Settings className="w-4 h-4 text-accent-400" />
-            <span className="text-sm font-medium text-white/80">Editor</span>
+            <Settings className="w-3.5 h-3.5 text-accent-400/70" />
+            <span className="text-[12px] font-semibold text-white/65">Editor</span>
           </div>
         </div>
 
@@ -599,18 +616,22 @@ export function CrosshairCreator() {
 
           {/* Animation */}
           <Section title="Animation" icon={<Play className="w-4 h-4" />}>
-            <div className="space-y-2">
-              <span className="text-xs text-white/50">Animation Type</span>
-              <div className="grid grid-cols-3 gap-1.5">
+            <div className="space-y-1.5">
+              <span className="text-[11px] text-white/40 font-medium">Animation Type</span>
+              <div className="grid grid-cols-3 gap-1">
                 {(['none', 'pulse', 'breathe', 'fade', 'rotate', 'scale'] as AnimationType[]).map((type) => (
                   <button
                     key={type}
                     onClick={() => updateCrosshair({ animation: type })}
-                    className={`px-2 py-1.5 rounded-lg text-xs capitalize transition-colors ${
+                    className={`px-2 py-1.5 rounded-lg text-[10px] font-semibold capitalize transition-all ${
                       crosshair.animation === type
-                        ? 'bg-accent-500/20 text-accent-400 border border-accent-500/30'
-                        : 'bg-white/5 text-white/40 hover:bg-white/10 border border-transparent'
+                        ? 'bg-accent-500/15 text-accent-400 shadow-[0_0_8px_rgba(99,102,241,0.15)]'
+                        : 'text-white/30 hover:text-white/50 hover:bg-white/[0.04]'
                     }`}
+                    style={crosshair.animation !== type ? {
+                      background: 'rgba(255,255,255,0.03)',
+                      border: '1px solid rgba(255,255,255,0.04)',
+                    } : { border: '1px solid rgba(99,102,241,0.2)' }}
                   >
                     {type}
                   </button>
@@ -632,39 +653,53 @@ export function CrosshairCreator() {
         </div>
 
         {/* Bottom Actions */}
-        <div className="p-3 border-t border-white/5 space-y-2">
+        <div className="p-3 border-t border-white/[0.04] space-y-2"
+          style={{ background: 'rgba(255,255,255,0.01)' }}
+        >
           <button
             onClick={handleSaveAsPreset}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-accent-500 hover:bg-accent-600
-              rounded-xl text-sm font-medium text-white transition-colors"
+            className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-[12px] font-semibold text-white transition-all"
+            style={{
+              background: 'linear-gradient(135deg, var(--accent-500), var(--accent-600))',
+              boxShadow: '0 4px 16px rgba(99,102,241,0.3)',
+            }}
           >
-            <Save className="w-4 h-4" />
+            <Save className="w-3.5 h-3.5" />
             Save as Preset
           </button>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-3 gap-1.5">
             <button
               onClick={handleExportPNG}
-              className="flex items-center justify-center gap-1.5 px-3 py-2 bg-white/5 hover:bg-white/10
-                rounded-xl text-xs text-white/60 transition-colors"
+              className="flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg text-[11px] text-white/45 transition-all hover:text-white/65"
+              style={{
+                background: 'rgba(255,255,255,0.03)',
+                border: '1px solid rgba(255,255,255,0.04)',
+              }}
             >
-              <Download className="w-3.5 h-3.5" />
-              Export PNG
+              <Download className="w-3 h-3" />
+              Export
             </button>
             <button
               onClick={handleReset}
-              className="flex items-center justify-center gap-1.5 px-3 py-2 bg-white/5 hover:bg-white/10
-                rounded-xl text-xs text-white/60 transition-colors"
+              className="flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg text-[11px] text-white/45 transition-all hover:text-white/65"
+              style={{
+                background: 'rgba(255,255,255,0.03)',
+                border: '1px solid rgba(255,255,255,0.04)',
+              }}
             >
-              <RotateCcw className="w-3.5 h-3.5" />
+              <RotateCcw className="w-3 h-3" />
               Reset
             </button>
             <button
               onClick={handleImportPNG}
-              className="flex items-center justify-center gap-1.5 px-3 py-2 bg-white/5 hover:bg-white/10
-                rounded-xl text-xs text-white/60 transition-colors"
+              className="flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg text-[11px] text-white/45 transition-all hover:text-white/65"
+              style={{
+                background: 'rgba(255,255,255,0.03)',
+                border: '1px solid rgba(255,255,255,0.04)',
+              }}
             >
-              <Upload className="w-3.5 h-3.5" />
-              Import PNG
+              <Upload className="w-3 h-3" />
+              Import
             </button>
           </div>
         </div>

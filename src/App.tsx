@@ -264,7 +264,9 @@ function App() {
         <div className="absolute inset-0 bg-black/70 -z-10" />
       )}
       {!backgroundImage && (
-        <div className="absolute inset-0 bg-gradient-to-br from-[#0c0c14] via-[#0f1019] to-[#0c0c14] -z-10" />
+        <div className="absolute inset-0 -z-10" style={{
+          background: 'radial-gradient(ellipse at 50% 0%, rgba(99,102,241,0.04) 0%, transparent 50%), linear-gradient(180deg, #0c0c14 0%, #08080e 100%)',
+        }} />
       )}
       <TitleBar overlayVisible={visible} onToggleOverlay={handleToggleOverlay} />
       <div className="flex-1 flex overflow-hidden" style={{ flexDirection: sidebarPosition === 'right' ? 'row-reverse' : 'row' }}>

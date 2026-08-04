@@ -32,34 +32,41 @@ const navItems = [
 
 export function Sidebar({ activeView, onViewChange, currentCrosshair }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
-  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
 
-  const width = collapsed ? 64 : 240;
+  const width = collapsed ? 60 : 220;
 
   return (
     <motion.aside
-      className="h-full bg-[#08080e] border-r border-white/[0.06] flex flex-col overflow-hidden"
+      className="h-full flex flex-col overflow-hidden relative"
       animate={{ width }}
-      transition={{ duration: 0.2, ease: 'easeInOut' }}
+      transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
+      style={{
+        background: 'linear-gradient(180deg, rgba(12,12,20,0.98) 0%, rgba(8,8,14,1) 100%)',
+        borderRight: '1px solid rgba(255,255,255,0.04)',
+      }}
     >
+      {/* Subtle left edge highlight */}
+      <div className="absolute right-0 inset-y-0 w-px bg-gradient-to-b from-white/[0.04] via-white/[0.02] to-transparent" />
+
       {/* Logo section */}
-      <div className="h-[52px] flex items-center px-4 border-b border-white/5">
+      <div className="h-[52px] flex items-center px-4 border-b border-white/[0.04]">
         <motion.div
-          className="flex items-center gap-3 overflow-hidden"
+          className="flex items-center gap-2.5 overflow-hidden"
           animate={{ opacity: collapsed ? 0 : 1 }}
           transition={{ duration: 0.15 }}
         >
-          <div className="w-8 h-8 rounded-lg bg-accent-500/20 flex items-center justify-center flex-shrink-0">
-            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" className="text-accent-500">
-              <circle cx="12" cy="12" r="4" />
-              <line x1="12" y1="2" x2="12" y2="8" />
-              <line x1="12" y1="16" x2="12" y2="22" />
-              <line x1="2" y1="12" x2="8" y2="12" />
-              <line x1="16" y1="12" x2="22" y2="12" />
+          <div className="w-7 h-7 rounded-lg bg-accent-500/15 flex items-center justify-center flex-shrink-0 ring-1 ring-accent-500/20">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" className="text-accent-400">
+              <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.5" />
+              <line x1="12" y1="3" x2="12" y2="8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              <line x1="12" y1="16" x2="12" y2="21" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              <line x1="3" y1="12" x2="8" y2="12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              <line x1="16" y1="12" x2="21" y2="12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              <circle cx="12" cy="12" r="1" fill="currentColor" />
             </svg>
           </div>
           {!collapsed && (
-            <span className="text-sm font-semibold text-white/90 whitespace-nowrap">
+            <span className="text-[13px] font-bold text-white/85 tracking-tight whitespace-nowrap">
               Crosshair
             </span>
           )}
@@ -67,7 +74,7 @@ export function Sidebar({ activeView, onViewChange, currentCrosshair }: SidebarP
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 py-3 px-2 space-y-1 overflow-y-auto">
+      <nav className="flex-1 py-3 px-2 space-y-0.5 overflow-y-auto">
         {navItems.map((item) => {
           const isActive = activeView === item.id;
           const Icon = item.icon;
@@ -76,33 +83,40 @@ export function Sidebar({ activeView, onViewChange, currentCrosshair }: SidebarP
             <motion.button
               key={item.id}
               className={`
-                w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors relative
+                nav-item w-full flex items-center gap-2.5 px-3 py-2 rounded-lg relative group
                 ${isActive
-                  ? 'bg-accent-500/10 text-accent-400'
-                  : 'text-white/50 hover:bg-white/5 hover:text-white/70'
+                  ? 'text-accent-400'
+                  : 'text-white/40 hover:text-white/60'
                 }
               `}
-              onMouseEnter={() => setHoveredItem(item.id)}
-              onMouseLeave={() => setHoveredItem(null)}
-              whileHover={{ x: 2 }}
+              whileHover={{ x: 1 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => onViewChange(item.id)}
             >
-              {/* Active indicator */}
+              {/* Active background */}
               {isActive && (
                 <motion.div
-                  className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 bg-accent-500 rounded-r-full"
+                  className="absolute inset-0 bg-accent-500/10 rounded-lg"
+                  layoutId="activeNavBg"
+                  transition={{ type: 'spring', stiffness: 350, damping: 30 }}
+                />
+              )}
+
+              {/* Active indicator bar */}
+              {isActive && (
+                <motion.div
+                  className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 bg-accent-500 rounded-r-full shadow-[0_0_8px_rgba(99,102,241,0.4)]"
                   layoutId="activeIndicator"
                   transition={{ type: 'spring', stiffness: 300, damping: 30 }}
                 />
               )}
 
-              <Icon className="w-5 h-5 flex-shrink-0" />
+              <Icon className="w-4 h-4 flex-shrink-0 relative z-10" />
 
               <AnimatePresence>
                 {!collapsed && (
                   <motion.span
-                    className="text-sm font-medium whitespace-nowrap"
+                    className="text-[13px] font-medium whitespace-nowrap relative z-10"
                     initial={{ opacity: 0, width: 0 }}
                     animate={{ opacity: 1, width: 'auto' }}
                     exit={{ opacity: 0, width: 0 }}
@@ -119,31 +133,35 @@ export function Sidebar({ activeView, onViewChange, currentCrosshair }: SidebarP
 
       {/* Current crosshair preview */}
       {!collapsed && currentCrosshair && (
-        <div className="px-3 py-4 border-t border-white/5">
-          <div className="text-xs text-white/30 mb-2 px-1">Current Crosshair</div>
-          <div className="bg-[#1a1a2e] rounded-lg p-3 flex items-center justify-center">
-            <CrosshairRenderer config={currentCrosshair} size={48} />
+        <div className="px-2.5 py-3 border-t border-white/[0.04]">
+          <div className="text-[10px] text-white/25 mb-2 px-1 uppercase tracking-wider font-medium">Current</div>
+          <div className="rounded-xl p-3 flex items-center justify-center relative overflow-hidden"
+            style={{
+              background: 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)',
+              border: '1px solid rgba(255,255,255,0.04)',
+            }}
+          >
+            <CrosshairRenderer config={currentCrosshair} size={44} />
           </div>
-          <div className="mt-2 px-1 text-xs text-white/50 truncate">
+          <div className="mt-2 px-1 text-[11px] text-white/45 truncate font-medium">
             {currentCrosshair.name || 'Unnamed'}
           </div>
         </div>
       )}
 
       {/* Collapse toggle */}
-      <div className="px-2 py-3 border-t border-white/5">
+      <div className="px-2 py-2.5 border-t border-white/[0.04]">
         <motion.button
-          className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-white/40 hover:bg-white/5 hover:text-white/60 transition-colors"
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
+          className="w-full flex items-center justify-center gap-2 px-3 py-1.5 rounded-lg text-white/30 hover:bg-white/[0.04] hover:text-white/50 transition-colors"
+          whileTap={{ scale: 0.97 }}
           onClick={() => setCollapsed(!collapsed)}
         >
           {collapsed ? (
-            <ChevronRight className="w-4 h-4" />
+            <ChevronRight className="w-3.5 h-3.5" />
           ) : (
             <>
-              <ChevronLeft className="w-4 h-4" />
-              <span className="text-xs">Collapse</span>
+              <ChevronLeft className="w-3.5 h-3.5" />
+              <span className="text-[11px] font-medium">Collapse</span>
             </>
           )}
         </motion.button>
