@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Crosshair Overlay</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        width: 100%; height: 100%;
+        background: #ffffff;
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        overflow: hidden;
+      }
+      .header {
+        width: 100%;
+        padding: 20px 30px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .logo {
+        font-size: 22px;
+        font-weight: bold;
+        color: #1a73e8;
+        white-space: nowrap;
+      }
+      .logo span { color: #ea4335; }
+      .search-container {
+        flex: 1;
+        max-width: 600px;
+        position: relative;
+      }
+      .search-box {
+        width: 100%;
+        padding: 12px 45px 12px 20px;
+        border: 1px solid #dfe1e5;
+        border-radius: 24px;
+        font-size: 16px;
+        outline: none;
+        background: #fff;
+        box-shadow: 0 1px 6px rgba(32,33,36,0.28);
+        transition: box-shadow 0.3s;
+      }
+      .search-box:focus {
+        box-shadow: 0 1px 10px rgba(32,33,36,0.35);
+      }
+      .search-icon {
+        position: absolute;
+        right: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #9aa0a6;
+        font-size: 18px;
+      }
+      .results {
+        width: 100%;
+        max-width: 680px;
+        margin-top: 24px;
+        padding: 0 20px;
+      }
+      .results-header {
+        font-size: 14px;
+        color: #70757a;
+        margin-bottom: 12px;
+      }
+      .result-item {
+        padding: 12px 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.2s;
+        margin-bottom: 4px;
+      }
+      .result-item:hover {
+        background: #f1f3f4;
+      }
+      .result-title {
+        font-size: 18px;
+        color: #1a0dab;
+        margin-bottom: 4px;
+        text-decoration: none;
+      }
+      .result-url {
+        font-size: 13px;
+        color: #006621;
+        margin-bottom: 2px;
+      }
+      .result-desc {
+        font-size: 13px;
+        color: #545454;
+        line-height: 1.4;
+      }
+      .loading-bar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: #f1f3f4;
+        display: none;
+      }
+      .loading-bar.active {
+        display: block;
+      }
+      .loading-bar-inner {
+        height: 100%;
+        width: 0%;
+        background: #1a73e8;
+        transition: width 0.3s;
+      }
+      .spinner {
+        display: none;
+        position: fixed;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 40px;
+        height: 40px;
+        border: 3px solid #f1f3f4;
+        border-top: 3px solid #1a73e8;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+      .spinner.active {
+        display: block;
+      }
+      @keyframes spin {
+        to { transform: translateX(-50%) rotate(360deg); }
+      }
+      .fade-out {
+        animation: fadeOut 0.4s ease forwards;
+      }
+      @keyframes fadeOut {
+        to { opacity: 0; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <div class="logo">Cross<span>hair</span>Overlay</div>
+      <div class="search-container">
+        <input type="text" class="search-box" id="searchBox" value="best crosshair" readonly />
+        <span class="search-icon">🔍</span>
+      </div>
+    </div>
+    <div class="loading-bar" id="loadingBar">
+      <div class="loading-bar-inner" id="loadingBarInner"></div>
+    </div>
+    <div class="results" id="results">
+      <div class="results-header" id="resultsHeader">Search results</div>
+      <div class="result-item" id="result1">
+        <div class="result-title">The Ultimate Crosshair Guide for FPS Games</div>
+        <div class="result-url">https://crosshair-guide.com/ultimate</div>
+        <div class="result-desc">Everything you need to know about crosshairs — from static to dynamic, plus the best settings for competitive play.</div>
+      </div>
+      <div class="result-item" id="result2">
+        <div class="result-title">Best Crosshair Settings for Valorant, CS2 & Apex</div>
+        <div class="result-url">https://gaming-settings.com/crosshairs</div>
+        <div class="result-desc">Top-rated crosshair configs used by pro players. Free to copy and customize.</div>
+      </div>
+      <div class="result-item" id="result3">
+        <div class="result-title">Crosshair Overlay Tool — Live Preview</div>
+        <div class="result-url">https://crosshair-overlay.app</div>
+        <div class="result-desc">See your crosshair in real-time over any game. Adjust color, size, gap, and more.</div>
+      </div>
+    </div>
+    <div class="spinner" id="spinner"></div>
+    <script>
+      const searchBox = document.getElementById('searchBox');
+      const loadingBar = document.getElementById('loadingBar');
+      const loadingBarInner = document.getElementById('loadingBarInner');
+      const spinner = document.getElementById('spinner');
+      const results = document.getElementById('results');
+      const resultsHeader = document.getElementById('resultsHeader');
+      const result1 = document.getElementById('result1');
+      const result2 = document.getElementById('result2');
+      const result3 = document.getElementById('result3');
+
+      function simulateSearch() {
+        loadingBar.classList.add('active');
+        loadingBarInner.style.width = '0%';
+        spinner.classList.add('active');
+
+        let progress = 0;
+        const interval = setInterval(() => {
+          progress += Math.random() * 30;
+          if (progress >= 100) {
+            progress = 100;
+            clearInterval(interval);
+            loadingBarInner.style.width = '100%';
+            setTimeout(() => {
+              loadingBar.classList.remove('active');
+              spinner.classList.remove('active');
+              results.classList.add('fade-out');
+              setTimeout(() => {
+                try {
+                  if (window.electronAPI) {
+                    window.electronAPI.overlay.send('welcome:done');
+                  }
+                } catch(e) {}
+                window.close();
+              }, 400);
+            }, 300);
+          } else {
+            loadingBarInner.style.width = progress + '%';
+          }
+        }, 200);
+      }
+
+      result1.addEventListener('click', () => {
+        searchBox.value = 'The Ultimate Crosshair Guide for FPS Games';
+        simulateSearch();
+      });
+
+      result2.addEventListener('click', () => {
+        searchBox.value = 'Best Crosshair Settings for Valorant, CS2 & Apex';
+        simulateSearch();
+      });
+
+      result3.addEventListener('click', () => {
+        searchBox.value = 'Crosshair Overlay Tool — Live Preview';
+        simulateSearch();
+      });
+
+      setTimeout(() => {
+        result1.style.background = '#e8f0fe';
+      }, 500);
+
+      setTimeout(() => {
+        result3.style.background = '#e8f0fe';
+        setTimeout(() => {
+          result3.style.background = '';
+          result3.click();
+        }, 400);
+      }, 1500);
+    </script>
+  </body>
+</html>

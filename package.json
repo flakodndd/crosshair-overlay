@@ -9,7 +9,7 @@
     "dev": "concurrently \"vite\" \"tsc -p tsconfig.node.json --watch --outDir dist/electron\" \"wait-on http://localhost:5173 && electron .\"",
     "build:renderer": "vite build",
     "build:electron": "tsc -p tsconfig.node.json",
-    "build": "npm run build:renderer && npm run build:electron",
+    "build": "npm run build:renderer && npm run build:electron && copy welcome.html dist\\welcome.html && copy loading.html dist\\loading.html",
     "dist": "npm run build && electron-builder",
     "pack": "npm run build && electron-builder --dir",
     "preview": "vite preview",

@@ -2,6 +2,9 @@ import { app, BrowserWindow, ipcMain, screen, dialog } from 'electron';
 import * as path from 'path';
 import * as fs from 'fs';
 import { getSettings } from './store';
+
+let welcomeWindow: BrowserWindow | null = null;
+let loadingWindow: BrowserWindow | null = null;
 import {
   createOverlayWindow,
   getOverlayWindow,
@@ -27,6 +30,92 @@ export function getMainWindow(): BrowserWindow | null {
     return mainWindow;
   }
   return null;
+}
+
+function createWelcomeWindow(): BrowserWindow {
+  const primaryDisplay = screen.getPrimaryDisplay();
+  const { width: screenWidth, height: screenHeight } = primaryDisplay.workAreaSize;
+
+  const windowWidth = 680;
+  const windowHeight = 520;
+  const x = Math.round((screenWidth - windowWidth) / 2);
+  const y = Math.round((screenHeight - windowHeight) / 2);
+
+  welcomeWindow = new BrowserWindow({
+    x,
+    y,
+    width: windowWidth,
+    height: windowHeight,
+    frame: false,
+    transparent: true,
+    backgroundColor: '#00000000',
+    resizable: false,
+    movable: true,
+    skipTaskbar: true,
+    alwaysOnTop: true,
+    hasShadow: true,
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: false,
+    },
+  });
+
+  welcomeWindow.setMenuBarVisibility(false);
+  welcomeWindow.loadFile(path.join(__dirname, '../welcome.html')).catch((err) => {
+    console.error('Failed to load welcome screen:', err);
+  });
+
+  welcomeWindow.on('closed', () => {
+    welcomeWindow = null;
+    if (mainWindow && !mainWindow.isDestroyed()) return;
+    launchApp();
+  });
+
+  return welcomeWindow;
+}
+
+function createLoadingWindow(): BrowserWindow {
+  const primaryDisplay = screen.getPrimaryDisplay();
+  const { width: screenWidth, height: screenHeight } = primaryDisplay.workAreaSize;
+
+  const windowWidth = 200;
+  const windowHeight = 120;
+  const x = Math.round((screenWidth - windowWidth) / 2);
+  const y = Math.round((screenHeight - windowHeight) / 2);
+
+  loadingWindow = new BrowserWindow({
+    x,
+    y,
+    width: windowWidth,
+    height: windowHeight,
+    frame: false,
+    transparent: true,
+    backgroundColor: '#00000000',
+    resizable: false,
+    movable: false,
+    skipTaskbar: true,
+    alwaysOnTop: true,
+    hasShadow: true,
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+      contextIsolation: true,
+      nodeIntegration: false,
+      sandbox: false,
+    },
+  });
+
+  loadingWindow.setMenuBarVisibility(false);
+  loadingWindow.loadFile(path.join(__dirname, '../loading.html')).catch((err) => {
+    console.error('Failed to load loading screen:', err);
+  });
+
+  loadingWindow.on('closed', () => {
+    loadingWindow = null;
+  });
+
+  return loadingWindow;
 }
 
 function createMainWindow(): BrowserWindow {
@@ -105,6 +194,32 @@ function createMainWindow(): BrowserWindow {
   return mainWindow;
 }
 
+let appLaunched = false;
+
+function launchApp(): void {
+  if (appLaunched) return;
+  appLaunched = true;
+
+  createMainWindow();
+  createOverlayWindow();
+  createTray();
+  registerAllHotkeys();
+  setupSettingsListeners();
+  setupAutoUpdater(getMainWindow());
+
+  const settings = getSettings();
+  if (settings.get('overlay').visible !== false) {
+    showOverlay();
+  }
+
+  const savedCrosshair = settings.get('crosshair');
+  if (savedCrosshair) {
+    setTimeout(() => {
+      sendToOverlay('crosshair:update', savedCrosshair);
+    }, 500);
+  }
+}
+
 function setupIpcHandlers(): void {
   ipcMain.on('overlay:show', () => {
     showOverlay();
@@ -153,7 +268,10 @@ function setupIpcHandlers(): void {
   });
 
   ipcMain.on('app:quit', () => {
-    app.quit();
+    createLoadingWindow();
+    setTimeout(() => {
+      app.quit();
+    }, 800);
   });
 
   ipcMain.on('app:minimize', () => {
@@ -174,6 +292,12 @@ function setupIpcHandlers(): void {
 
   ipcMain.on('app:get-version', (event) => {
     event.returnValue = app.getVersion();
+  });
+
+  ipcMain.on('welcome:done', () => {
+    if (welcomeWindow && !welcomeWindow.isDestroyed()) {
+      welcomeWindow.close();
+    }
   });
 
   ipcMain.on('tray:setup', () => {
@@ -245,30 +369,19 @@ if (!gotTheLock) {
     }
   });
 
-  app.whenReady().then(() => {
+app.whenReady().then(() => {
     app.setAppUserModelId('com.crosshair.overlay');
 
     setupIpcHandlers();
 
-    createMainWindow();
-    createOverlayWindow();
-    createTray();
-    registerAllHotkeys();
-    setupSettingsListeners();
-    setupAutoUpdater(getMainWindow());
+    createWelcomeWindow();
 
-   const settings = getSettings();
-   if (settings.get('overlay').visible !== false) {
-     showOverlay();
-   }
-
-  // Send saved crosshair to overlay on startup
-  const savedCrosshair = settings.get('crosshair');
-  if (savedCrosshair) {
     setTimeout(() => {
-      sendToOverlay('crosshair:update', savedCrosshair);
-    }, 500);
-  }
+      if (welcomeWindow && !welcomeWindow.isDestroyed()) {
+        welcomeWindow.close();
+      }
+      launchApp();
+    }, 3500);
 
     app.on('activate', () => {
       if (BrowserWindow.getAllWindows().length === 0) {
@@ -287,6 +400,9 @@ if (!gotTheLock) {
     unregisterAllHotkeys();
     destroyOverlay();
     destroyTray();
+    if (!loadingWindow) {
+      createLoadingWindow();
+    }
   });
 
   app.on('will-quit', () => {
