@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react';
-import { Search, Clock, Star, X, Heart, Sparkles } from 'lucide-react';
+import { useState, useMemo, useRef, useCallback } from 'react';
+import { Search, Clock, Star, X, Heart, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
 import type { CrosshairConfig } from '../types';
 import { CrosshairCard } from './CrosshairCard';
 import { useCrosshairStore } from '../stores/crosshairStore';
@@ -232,25 +232,63 @@ function Section({
   onSelect: (crosshair: CrosshairConfig) => void;
   onFavorite: (id: string) => void;
 }) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const scroll = useCallback((dir: 'left' | 'right') => {
+    if (!scrollRef.current) return;
+    const amount = dir === 'left' ? -360 : 360;
+    scrollRef.current.scrollBy({ left: amount, behavior: 'smooth' });
+  }, []);
+
   return (
-    <div>
+    <div className="relative group/section">
       <div className="flex items-center gap-2 mb-3">
         <span className="text-white/40">{icon}</span>
         <h2 className="text-base font-bold text-white/70">{title}</h2>
         <span className="text-[10px] text-white/20 font-medium bg-white/[0.04] px-1.5 py-0.5 rounded">{items.length}</span>
       </div>
 
-      <div className="flex gap-2.5 overflow-x-auto pb-2 scrollbar-hide -mx-6 px-6">
-        {items.map((crosshair) => (
-          <div key={crosshair.id} className="flex-shrink-0 w-[170px]">
-            <CrosshairCard
-              crosshair={crosshair}
-              selected={selectedId === crosshair.id}
-              onSelect={onSelect}
-              onFavorite={onFavorite}
-            />
-          </div>
-        ))}
+      <div className="relative">
+        {/* Left arrow */}
+        <button
+          onClick={() => scroll('left')}
+          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full flex items-center justify-center opacity-0 group-hover/section:opacity-100 transition-all duration-200 hover:scale-110 active:scale-95"
+          style={{
+            background: 'rgba(0,0,0,0.6)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            backdropFilter: 'blur(8px)',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+          }}
+        >
+          <ChevronLeft className="w-4 h-4 text-white/70" />
+        </button>
+
+        {/* Right arrow */}
+        <button
+          onClick={() => scroll('right')}
+          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-8 h-8 rounded-full flex items-center justify-center opacity-0 group-hover/section:opacity-100 transition-all duration-200 hover:scale-110 active:scale-95"
+          style={{
+            background: 'rgba(0,0,0,0.6)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            backdropFilter: 'blur(8px)',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+          }}
+        >
+          <ChevronRight className="w-4 h-4 text-white/70" />
+        </button>
+
+        <div ref={scrollRef} className="flex gap-2.5 overflow-x-auto pb-2 scrollbar-hide -mx-6 px-6">
+          {items.map((crosshair) => (
+            <div key={crosshair.id} className="flex-shrink-0 w-[170px]">
+              <CrosshairCard
+                crosshair={crosshair}
+                selected={selectedId === crosshair.id}
+                onSelect={onSelect}
+                onFavorite={onFavorite}
+              />
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
