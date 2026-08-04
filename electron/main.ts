@@ -5,6 +5,7 @@ import { getSettings } from './store';
 
 let welcomeWindow: BrowserWindow | null = null;
 let loadingWindow: BrowserWindow | null = null;
+let isQuitting = false;
 import {
   createOverlayWindow,
   getOverlayWindow,
@@ -90,8 +91,8 @@ function createLoadingWindow(): BrowserWindow {
   const primaryDisplay = screen.getPrimaryDisplay();
   const { width: screenWidth, height: screenHeight } = primaryDisplay.workAreaSize;
 
-  const windowWidth = 200;
-  const windowHeight = 120;
+  const windowWidth = 320;
+  const windowHeight = 180;
   const x = Math.round((screenWidth - windowWidth) / 2);
   const y = Math.round((screenHeight - windowHeight) / 2);
 
@@ -192,6 +193,7 @@ function createMainWindow(): BrowserWindow {
   });
 
   mainWindow.on('close', (event) => {
+    if (isQuitting) return;
     const settingsInstance = getSettings();
     if (settingsInstance.get('minimizeToTray')) {
       event.preventDefault();
@@ -281,10 +283,11 @@ function setupIpcHandlers(): void {
   });
 
   ipcMain.on('app:quit', () => {
-    createLoadingWindow();
-    setTimeout(() => {
-      app.quit();
-    }, 1500);
+    isQuitting = true;
+    if (mainWindow && !mainWindow.isDestroyed()) {
+      mainWindow.hide();
+    }
+    app.quit();
   });
 
   ipcMain.on('app:minimize', () => {
@@ -409,13 +412,17 @@ app.whenReady().then(() => {
     }
   });
 
-  app.on('before-quit', () => {
+  app.on('before-quit', (event) => {
+    if (loadingWindow && !loadingWindow.isDestroyed()) return;
+    isQuitting = true;
     unregisterAllHotkeys();
     destroyOverlay();
     destroyTray();
-    if (!loadingWindow) {
-      createLoadingWindow();
-    }
+    createLoadingWindow();
+    event.preventDefault();
+    setTimeout(() => {
+      app.quit();
+    }, 1500);
   });
 
   app.on('will-quit', () => {
