@@ -47,13 +47,13 @@ function createWelcomeWindow(): BrowserWindow {
     width: windowWidth,
     height: windowHeight,
     frame: false,
-    transparent: true,
-    backgroundColor: '#00000000',
+    backgroundColor: '#0a0a0f',
     resizable: false,
     movable: true,
     skipTaskbar: true,
     alwaysOnTop: true,
-    hasShadow: true,
+    hasShadow: false,
+    show: false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -63,8 +63,15 @@ function createWelcomeWindow(): BrowserWindow {
   });
 
   welcomeWindow.setMenuBarVisibility(false);
-  welcomeWindow.loadFile(path.join(__dirname, '../welcome.html')).catch((err) => {
-    console.error('Failed to load welcome screen:', err);
+
+  const welcomePath = path.join(__dirname, '../welcome.html');
+  console.log('[Welcome] Loading:', welcomePath);
+  welcomeWindow.loadFile(welcomePath).catch((err) => {
+    console.error('[Welcome] Failed to load:', err);
+  });
+
+  welcomeWindow.once('ready-to-show', () => {
+    welcomeWindow?.show();
   });
 
   welcomeWindow.on('closed', () => {
@@ -91,13 +98,13 @@ function createLoadingWindow(): BrowserWindow {
     width: windowWidth,
     height: windowHeight,
     frame: false,
-    transparent: true,
-    backgroundColor: '#00000000',
+    backgroundColor: '#0a0a0f',
     resizable: false,
     movable: false,
     skipTaskbar: true,
     alwaysOnTop: true,
-    hasShadow: true,
+    hasShadow: false,
+    show: false,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -107,8 +114,15 @@ function createLoadingWindow(): BrowserWindow {
   });
 
   loadingWindow.setMenuBarVisibility(false);
-  loadingWindow.loadFile(path.join(__dirname, '../loading.html')).catch((err) => {
-    console.error('Failed to load loading screen:', err);
+
+  const loadingPath = path.join(__dirname, '../loading.html');
+  console.log('[Loading] Loading:', loadingPath);
+  loadingWindow.loadFile(loadingPath).catch((err) => {
+    console.error('[Loading] Failed to load:', err);
+  });
+
+  loadingWindow.once('ready-to-show', () => {
+    loadingWindow?.show();
   });
 
   loadingWindow.on('closed', () => {
