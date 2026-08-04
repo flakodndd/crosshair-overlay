@@ -135,10 +135,11 @@ export function Sidebar({ activeView, onViewChange, currentCrosshair }: SidebarP
       {!collapsed && currentCrosshair && (
         <div className="px-2.5 py-3 border-t border-white/[0.04]">
           <div className="text-[10px] text-white/25 mb-2 px-1 uppercase tracking-wider font-medium">Current</div>
-          <div className="rounded-xl p-3 flex items-center justify-center relative overflow-hidden"
+          <div className="rounded-xl p-3 flex items-center justify-center relative"
             style={{
               background: 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)',
               border: '1px solid rgba(255,255,255,0.04)',
+              overflow: 'visible',
             }}
           >
             <CrosshairRenderer config={currentCrosshair} size={44} />

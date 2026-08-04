@@ -98,7 +98,7 @@ export function Preview({ size = 200 }: { size?: number }) {
       </div>
 
       {/* Preview Area */}
-      <div className="flex-1 flex items-center justify-center p-6 overflow-hidden">
+      <div className="flex-1 flex items-center justify-center p-6" style={{ overflow: 'visible' }}>
         <motion.div
           className="relative rounded-xl overflow-hidden"
           style={{

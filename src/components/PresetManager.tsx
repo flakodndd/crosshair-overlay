@@ -422,7 +422,7 @@ export function PresetManager() {
                         onDragOver={(e) => handleDragOver(e, index)}
                         onDragEnd={handleDragEnd}
                         className={`
-                          group relative rounded-xl overflow-hidden border transition-all cursor-pointer
+                          group relative rounded-xl border transition-all cursor-pointer
                           ${isActive
                             ? 'border-accent-500 ring-2 ring-accent-500/30 shadow-lg shadow-accent-500/10'
                             : isSelected

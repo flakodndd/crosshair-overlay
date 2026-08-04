@@ -358,7 +358,7 @@ export function ProfileManager() {
                 exit={{ opacity: 0, scale: 0.95 }}
                 whileHover={{ y: -2 }}
                 className={`
-                  relative group rounded-xl border overflow-hidden bg-[#12121f] transition-all cursor-pointer
+                  relative group rounded-xl border bg-[#12121f] transition-all cursor-pointer
                   ${isActive
                     ? 'border-accent-500 ring-2 ring-accent-500/30 shadow-lg shadow-accent-500/10'
                     : 'border-white/5 hover:border-white/10'

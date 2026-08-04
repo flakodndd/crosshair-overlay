@@ -338,8 +338,8 @@ export function CrosshairCreator() {
         </div>
 
         {/* Preview Area */}
-        <div className="flex-1 flex items-center justify-center relative overflow-hidden"
-          style={{ background: 'rgba(255,255,255,0.01)' }}
+        <div className="flex-1 flex items-center justify-center relative"
+          style={{ background: 'rgba(255,255,255,0.01)', overflow: 'visible' }}
         >
           <div
             ref={previewRef}

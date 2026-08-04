@@ -34,7 +34,7 @@ export function CrosshairCard({ crosshair, selected = false, onSelect, onFavorit
   return (
     <motion.div
       className={`
-        relative group cursor-pointer rounded-xl overflow-hidden
+        relative group cursor-pointer rounded-xl
         transition-all duration-200
         ${selected
           ? 'ring-2 ring-accent-500/50 shadow-lg shadow-accent-500/10'
@@ -53,9 +53,10 @@ export function CrosshairCard({ crosshair, selected = false, onSelect, onFavorit
       layout
     >
       {/* Preview area */}
-      <div className="relative h-28 flex items-center justify-center overflow-hidden"
+      <div className="relative h-28 flex items-center justify-center"
         style={{
           background: 'linear-gradient(180deg, rgba(255,255,255,0.02) 0%, transparent 100%)',
+          overflow: 'visible',
         }}
       >
         {/* Subtle radial glow behind crosshair */}
