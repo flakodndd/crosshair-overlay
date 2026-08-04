@@ -1,5 +1,4 @@
 import { useState, useMemo } from 'react';
-import { motion } from 'framer-motion';
 import { Search, Clock, Star, X, Heart, Sparkles } from 'lucide-react';
 import type { CrosshairConfig } from '../types';
 import { CrosshairCard } from './CrosshairCard';
@@ -121,23 +120,21 @@ export function CrosshairLibrary({ onSelect }: { onSelect?: (c: CrosshairConfig)
             }}
           />
           {searchQuery && (
-            <motion.button
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-white/25 hover:text-white/50"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
+            <button
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-white/25 hover:text-white/50 transition-colors"
               onClick={() => setSearchQuery('')}
             >
               <X className="w-3.5 h-3.5" />
-            </motion.button>
+            </button>
           )}
         </div>
 
         {/* Category pills */}
         <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide -mx-6 px-6">
           {categories.map((cat) => (
-            <motion.button
+            <button
               key={cat.id}
-              className={`px-3 py-1 rounded-lg text-[11px] font-semibold whitespace-nowrap transition-all ${
+              className={`px-3 py-1 rounded-lg text-[11px] font-semibold whitespace-nowrap transition-all duration-150 ${
                 activeCategory === cat.id
                   ? 'bg-accent-500 text-white shadow-[0_0_12px_rgba(99,102,241,0.3)]'
                   : 'text-white/35 hover:text-white/55 hover:bg-white/[0.04]'
@@ -146,12 +143,10 @@ export function CrosshairLibrary({ onSelect }: { onSelect?: (c: CrosshairConfig)
                 background: 'rgba(255,255,255,0.03)',
                 border: '1px solid rgba(255,255,255,0.04)',
               } : undefined}
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
               onClick={() => setActiveCategory(cat.id)}
             >
               {cat.label}
-            </motion.button>
+            </button>
           ))}
         </div>
       </div>
@@ -246,21 +241,15 @@ function Section({
       </div>
 
       <div className="flex gap-2.5 overflow-x-auto pb-2 scrollbar-hide -mx-6 px-6">
-        {items.map((crosshair, index) => (
-          <motion.div
-            key={crosshair.id}
-            className="flex-shrink-0 w-[170px]"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.03, duration: 0.3 }}
-          >
+        {items.map((crosshair) => (
+          <div key={crosshair.id} className="flex-shrink-0 w-[170px]">
             <CrosshairCard
               crosshair={crosshair}
               selected={selectedId === crosshair.id}
               onSelect={onSelect}
               onFavorite={onFavorite}
             />
-          </motion.div>
+          </div>
         ))}
       </div>
     </div>
@@ -280,20 +269,14 @@ function CrosshairGrid({
 }) {
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5">
-      {crosshairs.map((crosshair, index) => (
-        <motion.div
+      {crosshairs.map((crosshair) => (
+        <CrosshairCard
           key={crosshair.id}
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: Math.min(index * 0.02, 0.5), duration: 0.3 }}
-        >
-          <CrosshairCard
-            crosshair={crosshair}
-            selected={selectedId === crosshair.id}
-            onSelect={onSelect}
-            onFavorite={onFavorite}
-          />
-        </motion.div>
+          crosshair={crosshair}
+          selected={selectedId === crosshair.id}
+          onSelect={onSelect}
+          onFavorite={onFavorite}
+        />
       ))}
     </div>
   );
@@ -301,11 +284,7 @@ function CrosshairGrid({
 
 function EmptyState({ query, category }: { query: string; category: string }) {
   return (
-    <motion.div
-      className="flex flex-col items-center justify-center py-20 text-center"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-    >
+    <div className="flex flex-col items-center justify-center py-20 text-center fade-in">
       <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4"
         style={{
           background: 'rgba(255,255,255,0.03)',
@@ -320,6 +299,6 @@ function EmptyState({ query, category }: { query: string; category: string }) {
           ? `No results for "${query}"${category !== 'all' ? ` in ${category}` : ''}`
           : `No crosshairs in the ${category} category yet`}
       </p>
-    </motion.div>
+    </div>
   );
 }

@@ -162,12 +162,13 @@ function App() {
 
   // Send crosshair to overlay
   const setEditingCrosshair = useCrosshairStore((s) => s.setEditingCrosshair);
+  const userOffsetY = useCrosshairStore((s) => s.userOffsetY);
   useEffect(() => {
     const crosshair = editingCrosshair || activeCrosshair;
     if (crosshair && window.electronAPI?.crosshair) {
-      window.electronAPI.crosshair.set(crosshair as any);
+      window.electronAPI.crosshair.set({ ...crosshair, offsetY: userOffsetY } as any);
     }
-  }, [activeCrosshair, editingCrosshair]);
+  }, [activeCrosshair, editingCrosshair, userOffsetY]);
 
   const handleToggleOverlay = useCallback(() => {
     toggleVisible();

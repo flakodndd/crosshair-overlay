@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import React from 'react';
 import { Heart } from 'lucide-react';
 import type { CrosshairConfig } from '../types';
 import { CrosshairRenderer } from './CrosshairRenderer';
@@ -27,19 +27,20 @@ const categoryLabels: Record<string, string> = {
   custom: 'Custom',
 };
 
-export function CrosshairCard({ crosshair, selected = false, onSelect, onFavorite }: CrosshairCardProps) {
+export const CrosshairCard = React.memo(function CrosshairCard({ crosshair, selected = false, onSelect, onFavorite }: CrosshairCardProps) {
   const favorites = useCrosshairStore((s) => s.favorites);
   const isFavorited = favorites.includes(crosshair.id);
 
   return (
-    <motion.div
+    <div
       className={`
         relative group cursor-pointer rounded-xl
-        transition-all duration-200
+        transition-all duration-150 ease-out
         ${selected
           ? 'ring-2 ring-accent-500/50 shadow-lg shadow-accent-500/10'
-          : 'hover:shadow-lg hover:shadow-black/30'
+          : 'hover:shadow-lg hover:shadow-black/30 hover:-translate-y-0.5 hover:scale-[1.02]'
         }
+        active:scale-[0.97]
       `}
       style={{
         background: selected
@@ -47,10 +48,7 @@ export function CrosshairCard({ crosshair, selected = false, onSelect, onFavorit
           : 'linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.02) 100%)',
         border: `1px solid ${selected ? 'rgba(99,102,241,0.3)' : 'rgba(255,255,255,0.05)'}`,
       }}
-      whileHover={{ y: -3, scale: 1.02 }}
-      whileTap={{ scale: 0.97 }}
       onClick={() => onSelect(crosshair)}
-      layout
     >
       {/* Preview area */}
       <div className="relative h-28 flex items-center justify-center"
@@ -74,15 +72,13 @@ export function CrosshairCard({ crosshair, selected = false, onSelect, onFavorit
         </span>
 
         {/* Favorite button */}
-        <motion.button
-          className="absolute top-2 right-2 p-1 rounded-md opacity-0 group-hover:opacity-100 transition-all duration-200"
+        <button
+          className="absolute top-2 right-2 p-1 rounded-md opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-110 active:scale-90"
           style={{
             background: 'rgba(0,0,0,0.3)',
             backdropFilter: 'blur(8px)',
             border: '1px solid rgba(255,255,255,0.06)',
           }}
-          whileHover={{ scale: 1.15 }}
-          whileTap={{ scale: 0.9 }}
           onClick={(e) => {
             e.stopPropagation();
             onFavorite(crosshair.id);
@@ -95,7 +91,7 @@ export function CrosshairCard({ crosshair, selected = false, onSelect, onFavorit
                 : 'text-white/40 hover:text-white/70'
             }`}
           />
-        </motion.button>
+        </button>
       </div>
 
       {/* Info area */}
@@ -108,6 +104,6 @@ export function CrosshairCard({ crosshair, selected = false, onSelect, onFavorit
           <span className="text-[10px] text-white/30 font-mono uppercase">{crosshair.hex || crosshair.color}</span>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
-}
+});

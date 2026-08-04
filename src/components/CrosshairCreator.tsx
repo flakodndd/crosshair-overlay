@@ -236,7 +236,7 @@ function Section({ title, icon, defaultOpen = false, children }: SectionProps) {
 }
 
 export function CrosshairCreator() {
-  const { editingCrosshair, activeCrosshair, setEditingCrosshair, addCustomCrosshair } = useCrosshairStore();
+  const { editingCrosshair, activeCrosshair, setEditingCrosshair, addCustomCrosshair, userOffsetY, setUserOffsetY } = useCrosshairStore();
   const { createPreset } = usePresetStore();
   const [showGrid, setShowGrid] = useState(false);
   const [zoom, setZoom] = useState(1);
@@ -606,10 +606,10 @@ export function CrosshairCreator() {
               />
               <Slider
                 label="Y"
-                value={crosshair.offsetY}
-                min={-50}
-                max={50}
-                onChange={(v) => updateCrosshair({ offsetY: v })}
+                value={userOffsetY}
+                min={-100}
+                max={100}
+                onChange={(v) => setUserOffsetY(v)}
               />
             </div>
           </Section>

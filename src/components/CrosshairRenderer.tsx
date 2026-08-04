@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import React from 'react';
 import type { CrosshairConfig } from '../types';
 
 interface CrosshairRendererProps {
@@ -7,7 +7,7 @@ interface CrosshairRendererProps {
   showGuides?: boolean;
 }
 
-export function CrosshairRenderer({ config, size, showGuides = false }: CrosshairRendererProps) {
+export const CrosshairRenderer = React.memo(function CrosshairRenderer({ config, size, showGuides = false }: CrosshairRendererProps) {
   if (config.customImage) {
     return (
       <div
@@ -80,15 +80,12 @@ export function CrosshairRenderer({ config, size, showGuides = false }: Crosshai
   };
 
   return (
-    <motion.svg
+    <svg
       width={size}
       height={size}
       viewBox={`0 0 ${size} ${size}`}
       style={{ overflow: 'visible', ...getAnimationStyle() }}
       className={getAnimationClass()}
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={{ opacity: config.transparency || 1, scale: 1 }}
-      transition={{ duration: 0.3 }}
     >
       <defs>
         {config.glow && (
@@ -261,6 +258,6 @@ export function CrosshairRenderer({ config, size, showGuides = false }: Crosshai
           </>
         )}
       </g>
-    </motion.svg>
+    </svg>
   );
-}
+});

@@ -8,6 +8,7 @@ interface CrosshairState {
   crosshairSize: number;
   crosshairColor: string;
   crosshairOpacity: number;
+  userOffsetY: number;
   customCrosshairs: CrosshairConfig[];
   favorites: string[];
   recentCrosshairs: string[];
@@ -19,6 +20,7 @@ interface CrosshairState {
   setCrosshairSize: (size: number) => void;
   setCrosshairColor: (color: string) => void;
   setCrosshairOpacity: (opacity: number) => void;
+  setUserOffsetY: (offset: number) => void;
   addCustomCrosshair: (crosshair: CrosshairConfig) => void;
   removeCustomCrosshair: (id: string) => void;
   updateCustomCrosshair: (id: string, updates: Partial<CrosshairConfig>) => void;
@@ -41,6 +43,7 @@ const initialCrosshairState = {
   crosshairSize: 1,
   crosshairColor: '#ffffff',
   crosshairOpacity: 1,
+  userOffsetY: 25,
   customCrosshairs: [],
   favorites: [],
   recentCrosshairs: [],
@@ -61,6 +64,8 @@ export const useCrosshairStore = create<CrosshairState>()(
       setCrosshairColor: (color) => set({ crosshairColor: color }),
 
       setCrosshairOpacity: (opacity) => set({ crosshairOpacity: Math.max(0, Math.min(1, opacity)) }),
+
+      setUserOffsetY: (offset) => set({ userOffsetY: Math.max(-100, Math.min(100, offset)) }),
 
       addCustomCrosshair: (crosshair) =>
         set((state) => ({
@@ -151,6 +156,7 @@ export const useCrosshairStore = create<CrosshairState>()(
         crosshairSize: state.crosshairSize,
         crosshairColor: state.crosshairColor,
         crosshairOpacity: state.crosshairOpacity,
+        userOffsetY: state.userOffsetY,
         customCrosshairs: state.customCrosshairs,
         favorites: state.favorites,
         recentCrosshairs: state.recentCrosshairs,
