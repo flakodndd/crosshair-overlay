@@ -257,10 +257,10 @@ if (!gotTheLock) {
     setupSettingsListeners();
     setupAutoUpdater(getMainWindow());
 
-  const settings = getSettings();
-  if (settings.get('overlay').visible) {
-    showOverlay();
-  }
+   const settings = getSettings();
+   if (settings.get('overlay').visible !== false) {
+     showOverlay();
+   }
 
   // Send saved crosshair to overlay on startup
   const savedCrosshair = settings.get('crosshair');

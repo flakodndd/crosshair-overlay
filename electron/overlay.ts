@@ -18,27 +18,28 @@ export function createOverlayWindow(): BrowserWindow | null {
   const x = Math.round((screenWidth - size) / 2);
   const y = Math.round((screenHeight - size) / 2);
 
-  overlayWindow = new BrowserWindow({
-    x,
-    y,
-    width: size,
-    height: size,
-    minWidth: size,
-    minHeight: size,
-    transparent: true,
-    frame: false,
-    resizable: false,
-    movable: true,
-    skipTaskbar: true,
-    alwaysOnTop: true,
-    hasShadow: false,
-    webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
-      contextIsolation: true,
-      nodeIntegration: false,
-      sandbox: false,
-    },
-  });
+   overlayWindow = new BrowserWindow({
+     x,
+     y,
+     width: size,
+     height: size,
+     minWidth: size,
+     minHeight: size,
+     transparent: true,
+     frame: false,
+     resizable: false,
+     movable: true,
+     skipTaskbar: true,
+     alwaysOnTop: true,
+     hasShadow: false,
+     backgroundColor: '#00000000',
+     webPreferences: {
+       preload: path.join(__dirname, 'preload.js'),
+       contextIsolation: true,
+       nodeIntegration: false,
+       sandbox: false,
+     },
+   });
 
   overlayWindow.setAlwaysOnTop(true, 'screen-saver');
   overlayWindow.setIgnoreMouseEvents(true, { forward: true });
