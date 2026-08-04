@@ -264,7 +264,7 @@ function setupIpcHandlers(): void {
     createLoadingWindow();
     setTimeout(() => {
       app.quit();
-    }, 800);
+    }, 1500);
   });
 
   ipcMain.on('app:minimize', () => {
@@ -374,7 +374,7 @@ app.whenReady().then(() => {
         welcomeWindow.close();
       }
       launchApp();
-    }, 3500);
+    }, 5000);
 
     app.on('activate', () => {
       if (BrowserWindow.getAllWindows().length === 0) {

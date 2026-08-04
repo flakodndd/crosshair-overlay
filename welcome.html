@@ -1,241 +1,320 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Crosshair Overlay</title>
-    <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      html, body {
-        width: 100%; height: 100%;
-        background: #ffffff;
-        font-family: Arial, sans-serif;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        overflow: hidden;
-      }
-      .header {
-        width: 100%;
-        padding: 20px 30px;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-      }
-      .logo {
-        font-size: 22px;
-        font-weight: bold;
-        color: #1a73e8;
-        white-space: nowrap;
-      }
-      .logo span { color: #ea4335; }
-      .search-container {
-        flex: 1;
-        max-width: 600px;
-        position: relative;
-      }
-      .search-box {
-        width: 100%;
-        padding: 12px 45px 12px 20px;
-        border: 1px solid #dfe1e5;
-        border-radius: 24px;
-        font-size: 16px;
-        outline: none;
-        background: #fff;
-        box-shadow: 0 1px 6px rgba(32,33,36,0.28);
-        transition: box-shadow 0.3s;
-      }
-      .search-box:focus {
-        box-shadow: 0 1px 10px rgba(32,33,36,0.35);
-      }
-      .search-icon {
-        position: absolute;
-        right: 16px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #9aa0a6;
-        font-size: 18px;
-      }
-      .results {
-        width: 100%;
-        max-width: 680px;
-        margin-top: 24px;
-        padding: 0 20px;
-      }
-      .results-header {
-        font-size: 14px;
-        color: #70757a;
-        margin-bottom: 12px;
-      }
-      .result-item {
-        padding: 12px 16px;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: background 0.2s;
-        margin-bottom: 4px;
-      }
-      .result-item:hover {
-        background: #f1f3f4;
-      }
-      .result-title {
-        font-size: 18px;
-        color: #1a0dab;
-        margin-bottom: 4px;
-        text-decoration: none;
-      }
-      .result-url {
-        font-size: 13px;
-        color: #006621;
-        margin-bottom: 2px;
-      }
-      .result-desc {
-        font-size: 13px;
-        color: #545454;
-        line-height: 1.4;
-      }
-      .loading-bar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 3px;
-        background: #f1f3f4;
-        display: none;
-      }
-      .loading-bar.active {
-        display: block;
-      }
-      .loading-bar-inner {
-        height: 100%;
-        width: 0%;
-        background: #1a73e8;
-        transition: width 0.3s;
-      }
-      .spinner {
-        display: none;
-        position: fixed;
-        bottom: 30px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 40px;
-        height: 40px;
-        border: 3px solid #f1f3f4;
-        border-top: 3px solid #1a73e8;
-        border-radius: 50%;
-        animation: spin 0.8s linear infinite;
-      }
-      .spinner.active {
-        display: block;
-      }
-      @keyframes spin {
-        to { transform: translateX(-50%) rotate(360deg); }
-      }
-      .fade-out {
-        animation: fadeOut 0.4s ease forwards;
-      }
-      @keyframes fadeOut {
-        to { opacity: 0; }
-      }
-    </style>
-  </head>
-  <body>
-    <div class="header">
-      <div class="logo">Cross<span>hair</span>Overlay</div>
-      <div class="search-container">
-        <input type="text" class="search-box" id="searchBox" value="best crosshair" readonly />
-        <span class="search-icon">🔍</span>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CrosshairOverlay</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%; height: 100%;
+      background: #0a0a0f;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    canvas#particles {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+    }
+
+    .scene {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      z-index: 1;
+      opacity: 0;
+      transition: opacity 0.4s ease, transform 0.4s ease, filter 0.4s ease;
+    }
+    .scene.active { opacity: 1; }
+    .scene.blur-out {
+      opacity: 0;
+      filter: blur(24px);
+      transform: scale(1.15);
+    }
+
+    .search-scene .browser-bar {
+      display: flex; align-items: center;
+      background: #1e1e28;
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 12px;
+      padding: 0 20px;
+      width: 520px; height: 48px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    }
+    .browser-bar .dots { display: flex; gap: 6px; margin-right: 14px; }
+    .browser-bar .dots span { width: 10px; height: 10px; border-radius: 50%; }
+    .browser-bar .dots span:nth-child(1) { background: #ff5f57; }
+    .browser-bar .dots span:nth-child(2) { background: #ffbd2e; }
+    .browser-bar .dots span:nth-child(3) { background: #28c840; }
+    .browser-bar .url { flex: 1; font-size: 12px; color: #6b7280; }
+
+    .search-row {
+      margin-top: 14px;
+      display: flex; gap: 8px;
+      width: 520px;
+    }
+    .search-box {
+      flex: 1; height: 44px;
+      background: #16161e;
+      border: 1px solid rgba(99,102,241,0.2);
+      border-radius: 10px;
+      padding: 0 16px;
+      display: flex; align-items: center;
+      gap: 10px;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .search-box.focused {
+      border-color: rgba(99,102,241,0.5);
+      box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
+    }
+    .search-box .icon { color: #6366f1; font-size: 15px; }
+    .typed-text {
+      color: #e5e7eb; font-size: 14px;
+      border-right: 2px solid #6366f1;
+      white-space: nowrap;
+      animation: blink 0.6s step-end infinite;
+    }
+    @keyframes blink { 50% { border-color: transparent; } }
+
+    .results-dropdown {
+      margin-top: 6px;
+      width: 520px;
+      background: #16161e;
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 10px;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(-6px);
+      transition: opacity 0.25s, transform 0.25s;
+    }
+    .results-dropdown.show { opacity: 1; transform: translateY(0); }
+
+    .result-item {
+      padding: 10px 16px;
+      display: flex; align-items: center; gap: 10px;
+      transition: background 0.12s;
+      cursor: pointer;
+    }
+    .result-item.hl { background: rgba(99,102,241,0.1); }
+    .result-item .ri-icon {
+      width: 26px; height: 26px;
+      background: rgba(99,102,241,0.12);
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; flex-shrink: 0;
+    }
+    .result-item .ri-title { color: #c4b5fd; font-size: 13px; font-weight: 500; }
+    .result-item .ri-url { color: #6b7280; font-size: 10px; margin-top: 1px; }
+
+    .cursor {
+      position: fixed;
+      width: 22px; height: 22px;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: left 0.25s ease, top 0.25s ease, opacity 0.15s;
+    }
+    .cursor svg { width: 100%; height: 100%; filter: drop-shadow(0 1px 4px rgba(0,0,0,0.6)); }
+    .cursor.click svg { transform: scale(0.8); transition: transform 0.1s; }
+
+    .logo-scene { display: flex; flex-direction: column; align-items: center; }
+    .logo-mark {
+      width: 72px; height: 72px;
+      opacity: 0; transform: scale(0.4);
+      transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .logo-mark.show { opacity: 1; transform: scale(1); }
+    .logo-mark.expand {
+      transform: scale(25);
+      opacity: 0;
+      transition: transform 0.7s cubic-bezier(0.4,0,0.2,1), opacity 0.7s ease;
+    }
+    .logo-mark svg { width: 100%; height: 100%; }
+
+    .logo-text {
+      margin-top: 14px;
+      font-size: 20px; font-weight: 700;
+      letter-spacing: 1px;
+      opacity: 0; transform: translateY(8px);
+      transition: opacity 0.3s ease 0.1s, transform 0.3s ease 0.1s;
+    }
+    .logo-text.show { opacity: 1; transform: translateY(0); }
+    .logo-text .c1 { color: #818cf8; }
+    .logo-text .c2 { color: #c4b5fd; }
+
+    .logo-sub {
+      margin-top: 4px;
+      font-size: 11px; color: #6b7280;
+      letter-spacing: 3px; text-transform: uppercase;
+      opacity: 0; transition: opacity 0.3s ease 0.2s;
+    }
+    .logo-sub.show { opacity: 1; }
+  </style>
+</head>
+<body>
+  <canvas id="particles"></canvas>
+
+  <div class="scene search-scene active" id="searchScene">
+    <div class="browser-bar">
+      <div class="dots"><span></span><span></span><span></span></div>
+      <div class="url">&#128274; google.com/search</div>
+    </div>
+    <div class="search-row">
+      <div class="search-box" id="searchBar">
+        <span class="icon">&#128269;</span>
+        <span class="typed-text" id="typedText"></span>
       </div>
     </div>
-    <div class="loading-bar" id="loadingBar">
-      <div class="loading-bar-inner" id="loadingBarInner"></div>
-    </div>
-    <div class="results" id="results">
-      <div class="results-header" id="resultsHeader">Search results</div>
-      <div class="result-item" id="result1">
-        <div class="result-title">The Ultimate Crosshair Guide for FPS Games</div>
-        <div class="result-url">https://crosshair-guide.com/ultimate</div>
-        <div class="result-desc">Everything you need to know about crosshairs — from static to dynamic, plus the best settings for competitive play.</div>
+    <div class="results-dropdown" id="results">
+      <div class="result-item hl" id="r1">
+        <div class="ri-icon">&#9989;</div>
+        <div style="display:flex;flex-direction:column">
+          <span class="ri-title">Crosshair Overlay - Best Gaming Crosshair</span>
+          <span class="ri-url">crosshair-overlay.app</span>
+        </div>
       </div>
-      <div class="result-item" id="result2">
-        <div class="result-title">Best Crosshair Settings for Valorant, CS2 & Apex</div>
-        <div class="result-url">https://gaming-settings.com/crosshairs</div>
-        <div class="result-desc">Top-rated crosshair configs used by pro players. Free to copy and customize.</div>
-      </div>
-      <div class="result-item" id="result3">
-        <div class="result-title">Crosshair Overlay Tool — Live Preview</div>
-        <div class="result-url">https://crosshair-overlay.app</div>
-        <div class="result-desc">See your crosshair in real-time over any game. Adjust color, size, gap, and more.</div>
+      <div class="result-item">
+        <div class="ri-icon">&#127918;</div>
+        <div style="display:flex;flex-direction:column">
+          <span class="ri-title">Top Crosshair Settings for Competitive FPS</span>
+          <span class="ri-url">prosettings.net/crosshairs</span>
+        </div>
       </div>
     </div>
-    <div class="spinner" id="spinner"></div>
-    <script>
-      const searchBox = document.getElementById('searchBox');
-      const loadingBar = document.getElementById('loadingBar');
-      const loadingBarInner = document.getElementById('loadingBarInner');
-      const spinner = document.getElementById('spinner');
-      const results = document.getElementById('results');
-      const resultsHeader = document.getElementById('resultsHeader');
-      const result1 = document.getElementById('result1');
-      const result2 = document.getElementById('result2');
-      const result3 = document.getElementById('result3');
+  </div>
 
-      function simulateSearch() {
-        loadingBar.classList.add('active');
-        loadingBarInner.style.width = '0%';
-        spinner.classList.add('active');
+  <div class="scene logo-scene" id="logoScene">
+    <div class="logo-mark" id="logoMark">
+      <svg viewBox="0 0 80 80" fill="none">
+        <circle cx="40" cy="40" r="38" stroke="#6366f1" stroke-width="2" opacity="0.3"/>
+        <circle cx="40" cy="40" r="28" stroke="#818cf8" stroke-width="1.5" opacity="0.5"/>
+        <line x1="40" y1="8" x2="40" y2="26" stroke="#818cf8" stroke-width="2" stroke-linecap="round"/>
+        <line x1="40" y1="54" x2="40" y2="72" stroke="#818cf8" stroke-width="2" stroke-linecap="round"/>
+        <line x1="8" y1="40" x2="26" y2="40" stroke="#818cf8" stroke-width="2" stroke-linecap="round"/>
+        <line x1="54" y1="40" x2="72" y2="40" stroke="#818cf8" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="40" cy="40" r="3" fill="#c4b5fd"/>
+      </svg>
+    </div>
+    <div class="logo-text" id="logoText"><span class="c1">Cross</span><span class="c2">hair</span></div>
+    <div class="logo-sub" id="logoSub">Overlay</div>
+  </div>
 
-        let progress = 0;
-        const interval = setInterval(() => {
-          progress += Math.random() * 30;
-          if (progress >= 100) {
-            progress = 100;
-            clearInterval(interval);
-            loadingBarInner.style.width = '100%';
-            setTimeout(() => {
-              loadingBar.classList.remove('active');
-              spinner.classList.remove('active');
-              results.classList.add('fade-out');
-              setTimeout(() => {
-                try {
-                  if (window.electronAPI) {
-                    window.electronAPI.overlay.send('welcome:done');
-                  }
-                } catch(e) {}
-                window.close();
-              }, 400);
-            }, 300);
-          } else {
-            loadingBarInner.style.width = progress + '%';
-          }
-        }, 200);
+  <div class="cursor" id="cursor">
+    <svg viewBox="0 0 24 24" fill="white"><path d="M5 3L19 12L12 13.5L9 21L5 3Z" stroke="black" stroke-width="1" stroke-linejoin="round"/></svg>
+  </div>
+
+  <script>
+    const cv = document.getElementById('particles');
+    const cx = cv.getContext('2d');
+    let pts = [];
+    function resize() { cv.width = innerWidth; cv.height = innerHeight; }
+    resize();
+    addEventListener('resize', resize);
+    class P {
+      constructor() { this.r(); }
+      r() {
+        this.x = Math.random() * cv.width;
+        this.y = Math.random() * cv.height;
+        this.s = Math.random() * 1.5 + 0.5;
+        this.vx = (Math.random() - 0.5) * 0.25;
+        this.vy = (Math.random() - 0.5) * 0.25;
+        this.o = Math.random() * 0.35 + 0.05;
+        this.h = 230 + Math.random() * 30;
       }
+      u() {
+        this.x += this.vx; this.y += this.vy;
+        if (this.x < 0 || this.x > cv.width || this.y < 0 || this.y > cv.height) this.r();
+      }
+      d() {
+        cx.beginPath();
+        cx.arc(this.x, this.y, this.s, 0, Math.PI * 2);
+        cx.fillStyle = `hsla(${this.h},70%,70%,${this.o})`;
+        cx.fill();
+      }
+    }
+    for (let i = 0; i < 50; i++) pts.push(new P());
+    (function loop() {
+      cx.clearRect(0, 0, cv.width, cv.height);
+      pts.forEach(p => { p.u(); p.d(); });
+      requestAnimationFrame(loop);
+    })();
 
-      result1.addEventListener('click', () => {
-        searchBox.value = 'The Ultimate Crosshair Guide for FPS Games';
-        simulateSearch();
-      });
+    const typed = document.getElementById('typedText');
+    const bar = document.getElementById('searchBar');
+    const dd = document.getElementById('results');
+    const ss = document.getElementById('searchScene');
+    const ls = document.getElementById('logoScene');
+    const lm = document.getElementById('logoMark');
+    const lt = document.getElementById('logoText');
+    const lsub = document.getElementById('logoSub');
+    const cur = document.getElementById('cursor');
+    const r1 = document.getElementById('r1');
+    const Q = 'Best Crosshair';
+    let ci = 0;
 
-      result2.addEventListener('click', () => {
-        searchBox.value = 'Best Crosshair Settings for Valorant, CS2 & Apex';
-        simulateSearch();
-      });
+    function type() {
+      if (ci < Q.length) {
+        typed.textContent += Q[ci++];
+        setTimeout(type, 30 + Math.random() * 20);
+      } else {
+        typed.style.animation = 'none';
+        typed.style.borderRightColor = 'transparent';
+        setTimeout(ddShow, 120);
+      }
+    }
 
-      result3.addEventListener('click', () => {
-        searchBox.value = 'Crosshair Overlay Tool — Live Preview';
-        simulateSearch();
-      });
+    function ddShow() {
+      dd.classList.add('show');
+      setTimeout(showCur, 250);
+    }
 
+    function showCur() {
+      const rc = r1.getBoundingClientRect();
+      cur.style.left = (rc.left + rc.width / 2 - 11) + 'px';
+      cur.style.top = (rc.top + rc.height / 2 - 11) + 'px';
+      cur.style.opacity = '1';
+      setTimeout(clickResult, 200);
+    }
+
+    function clickResult() {
+      const rc = r1.getBoundingClientRect();
+      cur.style.left = (rc.left + rc.width / 2 - 11) + 'px';
+      cur.style.top = (rc.top + rc.height / 2 - 11) + 'px';
       setTimeout(() => {
-        result1.style.background = '#e8f0fe';
-      }, 500);
-
-      setTimeout(() => {
-        result3.style.background = '#e8f0fe';
+        cur.classList.add('click');
+        r1.style.background = 'rgba(99,102,241,0.25)';
         setTimeout(() => {
-          result3.style.background = '';
-          result3.click();
-        }, 400);
-      }, 1500);
-    </script>
-  </body>
+          cur.style.opacity = '0';
+          goLogo();
+        }, 150);
+      }, 150);
+    }
+
+    function goLogo() {
+      ss.classList.add('blur-out');
+      setTimeout(() => {
+        ss.classList.remove('active');
+        ss.style.display = 'none';
+        ls.classList.add('active');
+        setTimeout(() => {
+          lm.classList.add('show');
+          lt.classList.add('show');
+          lsub.classList.add('show');
+          setTimeout(() => {
+            lm.classList.add('expand');
+            setTimeout(() => window.close(), 700);
+          }, 800);
+        }, 50);
+      }, 400);
+    }
+
+    setTimeout(() => {
+      bar.classList.add('focused');
+      type();
+    }, 300);
+  </script>
+</body>
 </html>
