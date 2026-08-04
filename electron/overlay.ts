@@ -64,6 +64,13 @@ export function createOverlayWindow(): BrowserWindow | null {
   // When overlay finishes loading, send the current crosshair
   overlayWindow.webContents.on('did-finish-load', () => {
     console.log('[Overlay] Finished loading, sending current crosshair');
+    const settings = getSettings();
+    const crosshair = settings.get('crosshair');
+    if (crosshair) {
+      setTimeout(() => {
+        sendToOverlay('crosshair:update', crosshair);
+      }, 200);
+    }
   });
 
   overlayWindow.on('closed', () => {

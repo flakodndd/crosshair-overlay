@@ -211,13 +211,6 @@ function launchApp(): void {
   if (settings.get('overlay').visible !== false) {
     showOverlay();
   }
-
-  const savedCrosshair = settings.get('crosshair');
-  if (savedCrosshair) {
-    setTimeout(() => {
-      sendToOverlay('crosshair:update', savedCrosshair);
-    }, 500);
-  }
 }
 
 function setupIpcHandlers(): void {
