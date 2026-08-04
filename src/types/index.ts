@@ -27,6 +27,7 @@ export interface CrosshairConfig {
   id: string;
   name: string;
   category: Category;
+  size: number;
   width: number;
   height: number;
   thickness: number;

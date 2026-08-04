@@ -218,6 +218,7 @@ export function decodeShareCode(code: string): CrosshairConfig {
       id: `share_${Date.now()}`,
       name: 'Shared Crosshair',
       category: 'custom',
+      size: data.sz ?? 1,
       width: data.w ?? 24,
       height: data.h ?? 24,
       thickness: data.t ?? 2,

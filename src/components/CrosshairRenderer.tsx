@@ -35,11 +35,12 @@ export function CrosshairRenderer({ config, size, showGuides = false }: Crosshai
   }
 
   const half = size / 2;
-  const hLength = config.horizontalWidth ?? config.width ?? 6;
-  const hThickness = config.horizontalHeight ?? config.thickness ?? 2;
-  const vLength = config.verticalHeight ?? config.height ?? 6;
-  const vThickness = config.verticalWidth ?? config.thickness ?? 2;
-  const effectiveGap = config.gap ?? 4;
+  const scale = config.size ?? 1;
+  const hLength = (config.horizontalWidth ?? config.width ?? 6) * scale;
+  const hThickness = (config.horizontalHeight ?? config.thickness ?? 2) * scale;
+  const vLength = (config.verticalHeight ?? config.height ?? 6) * scale;
+  const vThickness = (config.verticalWidth ?? config.thickness ?? 2) * scale;
+  const effectiveGap = (config.gap ?? 4) * scale;
 
   const cx = half;
   const cy = half;
@@ -186,7 +187,7 @@ export function CrosshairRenderer({ config, size, showGuides = false }: Crosshai
               x2={cx - effectiveGap}
               y2={cy}
               stroke="#000000"
-              strokeWidth={hThickness + (config.outlineThickness || 2)}
+              strokeWidth={hThickness + (config.outlineThickness || 2) * scale}
               strokeOpacity={config.opacity}
               strokeLinecap={lineCap}
               style={{ paintOrder: 'stroke fill' }}
@@ -197,7 +198,7 @@ export function CrosshairRenderer({ config, size, showGuides = false }: Crosshai
               x2={cx + hLength + effectiveGap}
               y2={cy}
               stroke="#000000"
-              strokeWidth={hThickness + (config.outlineThickness || 2)}
+              strokeWidth={hThickness + (config.outlineThickness || 2) * scale}
               strokeOpacity={config.opacity}
               strokeLinecap={lineCap}
             />
@@ -207,7 +208,7 @@ export function CrosshairRenderer({ config, size, showGuides = false }: Crosshai
               x2={cx}
               y2={cy - effectiveGap}
               stroke="#000000"
-              strokeWidth={vThickness + (config.outlineThickness || 2)}
+              strokeWidth={vThickness + (config.outlineThickness || 2) * scale}
               strokeOpacity={config.opacity}
               strokeLinecap={lineCap}
             />
@@ -217,7 +218,7 @@ export function CrosshairRenderer({ config, size, showGuides = false }: Crosshai
               x2={cx}
               y2={cy + vLength + effectiveGap}
               stroke="#000000"
-              strokeWidth={vThickness + (config.outlineThickness || 2)}
+              strokeWidth={vThickness + (config.outlineThickness || 2) * scale}
               strokeOpacity={config.opacity}
               strokeLinecap={lineCap}
             />
@@ -229,10 +230,10 @@ export function CrosshairRenderer({ config, size, showGuides = false }: Crosshai
           <circle
             cx={cx}
             cy={cy}
-            r={config.centerDotSize / 2}
+            r={(config.centerDotSize / 2) * scale}
             fill={config.centerDotColor || color}
             stroke={config.outline ? '#000000' : undefined}
-            strokeWidth={config.outline ? config.outlineThickness || 1 : 0}
+            strokeWidth={config.outline ? (config.outlineThickness || 1) * scale : 0}
             strokeOpacity={config.opacity}
           />
         )}
@@ -242,12 +243,12 @@ export function CrosshairRenderer({ config, size, showGuides = false }: Crosshai
           <circle
             cx={cx}
             cy={cy}
-            r={config.circleRadius}
+            r={config.circleRadius * scale}
             fill="none"
             stroke={config.circleColor || color}
-            strokeWidth={config.circleThickness}
+            strokeWidth={config.circleThickness * scale}
             strokeOpacity={config.opacity}
-            strokeDasharray={config.circleRadius * 2 * Math.PI}
+            strokeDasharray={config.circleRadius * scale * 2 * Math.PI}
             strokeDashoffset={config.offset || 0}
           />
         )}

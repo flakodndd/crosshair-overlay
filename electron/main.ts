@@ -41,11 +41,13 @@ function startQuitSequence(): void {
   destroyOverlay();
   destroyTray();
 
-  if (mainWindow && !mainWindow.isDestroyed()) {
-    mainWindow.hide();
-  }
-
   createLoadingWindow();
+
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    mainWindow.removeAllListeners();
+    mainWindow.destroy();
+    mainWindow = null;
+  }
 
   setTimeout(() => {
     app.exit(0);
@@ -213,7 +215,6 @@ function createMainWindow(): BrowserWindow {
 
   mainWindow.on('close', (event) => {
     if (isQuitting) return;
-    event.preventDefault();
     startQuitSequence();
   });
 
@@ -419,6 +420,7 @@ if (!gotTheLock) {
   });
 
   app.on('window-all-closed', () => {
+    if (isQuitting) return;
     app.exit(0);
   });
 

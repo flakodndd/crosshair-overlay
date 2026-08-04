@@ -259,13 +259,30 @@ export function renderCrosshairToCanvas(
 ): void {
   ctx.clearRect(0, 0, size, size);
 
+  const scale = config.size ?? 1;
   const cx = size / 2;
   const cy = size / 2;
 
+  const scaledConfig = {
+    ...config,
+    horizontalWidth: config.horizontalWidth * scale,
+    horizontalHeight: config.horizontalHeight * scale,
+    verticalHeight: config.verticalHeight * scale,
+    verticalWidth: config.verticalWidth * scale,
+    thickness: config.thickness * scale,
+    gap: config.gap * scale,
+    centerDotSize: config.centerDotSize * scale,
+    circleRadius: config.circleRadius * scale,
+    circleThickness: config.circleThickness * scale,
+    outlineThickness: config.outlineThickness * scale,
+    glowIntensity: config.glowIntensity,
+    shadowBlur: config.shadowBlur,
+  };
+
   ctx.save();
 
-  applyShadow(ctx, config);
-  applyGlow(ctx, config);
+  applyShadow(ctx, scaledConfig);
+  applyGlow(ctx, scaledConfig);
 
   if (config.rotation !== 0) {
     ctx.translate(cx, cy);
@@ -273,21 +290,21 @@ export function renderCrosshairToCanvas(
     ctx.translate(-cx, -cy);
   }
 
-  if (config.gap > 0) {
-    drawGapLines(ctx, config, cx, cy);
+  if (scaledConfig.gap > 0) {
+    drawGapLines(ctx, scaledConfig, cx, cy);
   } else {
-    drawCrossLines(ctx, config, cx, cy);
+    drawCrossLines(ctx, scaledConfig, cx, cy);
   }
 
   resetEffects(ctx);
-  applyGlow(ctx, config);
+  applyGlow(ctx, scaledConfig);
 
-  drawCircle(ctx, config, cx, cy);
+  drawCircle(ctx, scaledConfig, cx, cy);
 
   resetEffects(ctx);
-  applyGlow(ctx, config);
+  applyGlow(ctx, scaledConfig);
 
-  drawCenterDot(ctx, config, cx, cy);
+  drawCenterDot(ctx, scaledConfig, cx, cy);
 
   resetEffects(ctx);
 
@@ -313,10 +330,18 @@ export function renderCrosshairToSVG(
   config: CrosshairConfig,
   size: number
 ): string {
+  const scale = config.size ?? 1;
   const cx = size / 2;
   const cy = size / 2;
-  const halfThickness = config.thickness / 2;
-  const halfGap = config.gap / 2;
+  const halfThickness = (config.thickness * scale) / 2;
+  const halfGap = (config.gap * scale) / 2;
+  const hW = config.horizontalWidth * scale;
+  const vH = config.verticalHeight * scale;
+  const thickness = config.thickness * scale;
+  const outlineThickness = config.outlineThickness * scale;
+  const circleRadius = config.circleRadius * scale;
+  const circleThickness = config.circleThickness * scale;
+  const centerDotSize = config.centerDotSize * scale;
 
   let elements: string[] = [];
 
@@ -332,11 +357,8 @@ export function renderCrosshairToSVG(
   const filterAttr = config.glow || config.shadow ? ` filter="url(#${config.glow ? 'glow' : 'shadow'})"` : '';
   const transform = config.rotation !== 0 ? ` transform="rotate(${config.rotation} ${cx} ${cy})"` : '';
 
-  const stroke = config.outline ? ` stroke="#000" stroke-width="${config.outlineThickness}"` : '';
-  const strokeAttr = ` stroke="${config.color}" stroke-width="${config.thickness}"`;
-  const fillAttr = config.gradient && config.gradientColors.length >= 2
-    ? ` stroke="url(#gradient)"`
-    : '';
+  const stroke = config.outline ? ` stroke="#000" stroke-width="${outlineThickness}"` : '';
+  const strokeAttr = ` stroke="${config.color}" stroke-width="${thickness}"`;
 
   let gradientDef = '';
   if (config.gradient && config.gradientColors.length >= 2) {
@@ -344,49 +366,49 @@ export function renderCrosshairToSVG(
   }
 
   if (config.gap > 0) {
-    const leftW = (config.horizontalWidth / 2) - halfGap;
-    const rightW = (config.horizontalWidth / 2) - halfGap;
-    const topH = (config.verticalHeight / 2) - halfGap;
-    const bottomH = (config.verticalHeight / 2) - halfGap;
+    const leftW = (hW / 2) - halfGap;
+    const rightW = (hW / 2) - halfGap;
+    const topH = (vH / 2) - halfGap;
+    const bottomH = (vH / 2) - halfGap;
 
     if (leftW > 0) {
-      if (config.outline) elements.push(`<line x1="${cx - config.horizontalWidth / 2}" y1="${cy}" x2="${cx - halfGap}" y2="${cy}" stroke="#000" stroke-width="${config.thickness + config.outlineThickness * 2}" stroke-linecap="${config.roundedEdges ? 'round' : 'butt'}"/>`);
-      elements.push(`<line x1="${cx - config.horizontalWidth / 2}" y1="${cy}" x2="${cx - halfGap}" y2="${cy}" stroke="${config.color}" stroke-width="${config.thickness}" stroke-linecap="${config.roundedEdges ? 'round' : 'butt'}"${filterAttr}${transform} opacity="${config.opacity}"/>`);
+      if (config.outline) elements.push(`<line x1="${cx - hW / 2}" y1="${cy}" x2="${cx - halfGap}" y2="${cy}" stroke="#000" stroke-width="${thickness + outlineThickness * 2}" stroke-linecap="${config.roundedEdges ? 'round' : 'butt'}"/>`);
+      elements.push(`<line x1="${cx - hW / 2}" y1="${cy}" x2="${cx - halfGap}" y2="${cy}" stroke="${config.color}" stroke-width="${thickness}" stroke-linecap="${config.roundedEdges ? 'round' : 'butt'}"${filterAttr}${transform} opacity="${config.opacity}"/>`);
     }
     if (rightW > 0) {
-      if (config.outline) elements.push(`<line x1="${cx + halfGap}" y1="${cy}" x2="${cx + config.horizontalWidth / 2}" y2="${cy}" stroke="#000" stroke-width="${config.thickness + config.outlineThickness * 2}" stroke-linecap="${config.roundedEdges ? 'round' : 'butt'}"/>`);
-      elements.push(`<line x1="${cx + halfGap}" y1="${cy}" x2="${cx + config.horizontalWidth / 2}" y2="${cy}" stroke="${config.color}" stroke-width="${config.thickness}" stroke-linecap="${config.roundedEdges ? 'round' : 'butt'}"${filterAttr}${transform} opacity="${config.opacity}"/>`);
+      if (config.outline) elements.push(`<line x1="${cx + halfGap}" y1="${cy}" x2="${cx + hW / 2}" y2="${cy}" stroke="#000" stroke-width="${thickness + outlineThickness * 2}" stroke-linecap="${config.roundedEdges ? 'round' : 'butt'}"/>`);
+      elements.push(`<line x1="${cx + halfGap}" y1="${cy}" x2="${cx + hW / 2}" y2="${cy}" stroke="${config.color}" stroke-width="${thickness}" stroke-linecap="${config.roundedEdges ? 'round' : 'butt'}"${filterAttr}${transform} opacity="${config.opacity}"/>`);
     }
     if (topH > 0) {
-      if (config.outline) elements.push(`<line x1="${cx}" y1="${cy - config.verticalHeight / 2}" x2="${cx}" y2="${cy - halfGap}" stroke="#000" stroke-width="${config.thickness + config.outlineThickness * 2}" stroke-linecap="${config.roundedEdges ? 'round' : 'butt'}"/>`);
-      elements.push(`<line x1="${cx}" y1="${cy - config.verticalHeight / 2}" x2="${cx}" y2="${cy - halfGap}" stroke="${config.color}" stroke-width="${config.thickness}" stroke-linecap="${config.roundedEdges ? 'round' : 'butt'}"${filterAttr}${transform} opacity="${config.opacity}"/>`);
+      if (config.outline) elements.push(`<line x1="${cx}" y1="${cy - vH / 2}" x2="${cx}" y2="${cy - halfGap}" stroke="#000" stroke-width="${thickness + outlineThickness * 2}" stroke-linecap="${config.roundedEdges ? 'round' : 'butt'}"/>`);
+      elements.push(`<line x1="${cx}" y1="${cy - vH / 2}" x2="${cx}" y2="${cy - halfGap}" stroke="${config.color}" stroke-width="${thickness}" stroke-linecap="${config.roundedEdges ? 'round' : 'butt'}"${filterAttr}${transform} opacity="${config.opacity}"/>`);
     }
     if (bottomH > 0) {
-      if (config.outline) elements.push(`<line x1="${cx}" y1="${cy + halfGap}" x2="${cx}" y2="${cy + config.verticalHeight / 2}" stroke="#000" stroke-width="${config.thickness + config.outlineThickness * 2}" stroke-linecap="${config.roundedEdges ? 'round' : 'butt'}"/>`);
-      elements.push(`<line x1="${cx}" y1="${cy + halfGap}" x2="${cx}" y2="${cy + config.verticalHeight / 2}" stroke="${config.color}" stroke-width="${config.thickness}" stroke-linecap="${config.roundedEdges ? 'round' : 'butt'}"${filterAttr}${transform} opacity="${config.opacity}"/>`);
+      if (config.outline) elements.push(`<line x1="${cx}" y1="${cy + halfGap}" x2="${cx}" y2="${cy + vH / 2}" stroke="#000" stroke-width="${thickness + outlineThickness * 2}" stroke-linecap="${config.roundedEdges ? 'round' : 'butt'}"/>`);
+      elements.push(`<line x1="${cx}" y1="${cy + halfGap}" x2="${cx}" y2="${cy + vH / 2}" stroke="${config.color}" stroke-width="${thickness}" stroke-linecap="${config.roundedEdges ? 'round' : 'butt'}"${filterAttr}${transform} opacity="${config.opacity}"/>`);
     }
   } else {
     if (config.outline) {
-      elements.push(`<line x1="${cx - config.horizontalWidth / 2}" y1="${cy}" x2="${cx + config.horizontalWidth / 2}" y2="${cy}" stroke="#000" stroke-width="${config.thickness + config.outlineThickness * 2}" stroke-linecap="${config.roundedEdges ? 'round' : 'butt'}"/>`);
-      elements.push(`<line x1="${cx}" y1="${cy - config.verticalHeight / 2}" x2="${cx}" y2="${cy + config.verticalHeight / 2}" stroke="#000" stroke-width="${config.thickness + config.outlineThickness * 2}" stroke-linecap="${config.roundedEdges ? 'round' : 'butt'}"/>`);
+      elements.push(`<line x1="${cx - hW / 2}" y1="${cy}" x2="${cx + hW / 2}" y2="${cy}" stroke="#000" stroke-width="${thickness + outlineThickness * 2}" stroke-linecap="${config.roundedEdges ? 'round' : 'butt'}"/>`);
+      elements.push(`<line x1="${cx}" y1="${cy - vH / 2}" x2="${cx}" y2="${cy + vH / 2}" stroke="#000" stroke-width="${thickness + outlineThickness * 2}" stroke-linecap="${config.roundedEdges ? 'round' : 'butt'}"/>`);
     }
-    const strokeStyle = ` stroke="${config.color}" stroke-width="${config.thickness}" stroke-linecap="${config.roundedEdges ? 'round' : 'butt'}"`;
-    elements.push(`<line x1="${cx - config.horizontalWidth / 2}" y1="${cy}" x2="${cx + config.horizontalWidth / 2}" y2="${cy}"${strokeStyle}${filterAttr}${transform} opacity="${config.opacity}"/>`);
-    elements.push(`<line x1="${cx}" y1="${cy - config.verticalHeight / 2}" x2="${cx}" y2="${cy + config.verticalHeight / 2}"${strokeStyle}${filterAttr}${transform} opacity="${config.opacity}"/>`);
+    const strokeStyle = ` stroke="${config.color}" stroke-width="${thickness}" stroke-linecap="${config.roundedEdges ? 'round' : 'butt'}"`;
+    elements.push(`<line x1="${cx - hW / 2}" y1="${cy}" x2="${cx + hW / 2}" y2="${cy}"${strokeStyle}${filterAttr}${transform} opacity="${config.opacity}"/>`);
+    elements.push(`<line x1="${cx}" y1="${cy - vH / 2}" x2="${cx}" y2="${cy + vH / 2}"${strokeStyle}${filterAttr}${transform} opacity="${config.opacity}"/>`);
   }
 
   if (config.circle) {
     if (config.outline) {
-      elements.push(`<circle cx="${cx}" cy="${cy}" r="${config.circleRadius}" fill="none" stroke="#000" stroke-width="${config.circleThickness + config.outlineThickness * 2}"${filterAttr}${transform} opacity="${config.opacity}"/>`);
+      elements.push(`<circle cx="${cx}" cy="${cy}" r="${circleRadius}" fill="none" stroke="#000" stroke-width="${circleThickness + outlineThickness * 2}"${filterAttr}${transform} opacity="${config.opacity}"/>`);
     }
-    elements.push(`<circle cx="${cx}" cy="${cy}" r="${config.circleRadius}" fill="none" stroke="${config.circleColor || config.color}" stroke-width="${config.circleThickness}"${filterAttr}${transform} opacity="${config.opacity}"/>`);
+    elements.push(`<circle cx="${cx}" cy="${cy}" r="${circleRadius}" fill="none" stroke="${config.circleColor || config.color}" stroke-width="${circleThickness}"${filterAttr}${transform} opacity="${config.opacity}"/>`);
   }
 
   if (config.centerDot) {
     if (config.outline) {
-      elements.push(`<circle cx="${cx}" cy="${cy}" r="${config.centerDotSize}" fill="none" stroke="#000" stroke-width="${config.outlineThickness * 2}"${filterAttr}${transform} opacity="${config.opacity}"/>`);
+      elements.push(`<circle cx="${cx}" cy="${cy}" r="${centerDotSize}" fill="none" stroke="#000" stroke-width="${outlineThickness * 2}"${filterAttr}${transform} opacity="${config.opacity}"/>`);
     }
-    elements.push(`<circle cx="${cx}" cy="${cy}" r="${config.centerDotSize}" fill="${config.centerDotColor || config.color}"${filterAttr}${transform} opacity="${config.opacity}"/>`);
+    elements.push(`<circle cx="${cx}" cy="${cy}" r="${centerDotSize}" fill="${config.centerDotColor || config.color}"${filterAttr}${transform} opacity="${config.opacity}"/>`);
   }
 
   const defs = [gradientDef, filters].filter(Boolean);

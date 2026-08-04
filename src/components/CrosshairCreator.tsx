@@ -399,6 +399,7 @@ export function CrosshairCreator() {
         <div className="flex-1 overflow-y-auto">
           {/* Basic Properties */}
           <Section title="Basic Properties" icon={<Crosshair className="w-4 h-4" />} defaultOpen>
+            <Slider label="Size" value={crosshair.size ?? 1} min={0.1} max={5} step={0.1} onChange={(v) => updateCrosshair({ size: v })} />
             <Slider label="Gap" value={crosshair.gap} min={0} max={50} onChange={(v) => updateCrosshair({ gap: v })} />
             <Slider label="Opacity" value={Math.round(crosshair.opacity * 100)} min={0} max={100} unit="%" onChange={(v) => updateCrosshair({ opacity: v / 100 })} />
             <Slider label="Rotation" value={crosshair.rotation} min={0} max={360} unit="°" onChange={(v) => updateCrosshair({ rotation: v })} />
